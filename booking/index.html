@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Booking Confirmation Generator</title>
+<link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1f7a4d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bookings">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{--bg:#f6f7f5;--card:#fff;--text:#1d2420;--muted:#66706a;--line:#d9ded9;--accent:#1f7a4d;--accent-text:#fff;--out:#eef6f0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141816;--card:#1d2320;--text:#e8ece9;--muted:#9aa59e;--line:#333c37;--accent:#3fb37a;--accent-text:#08140d;--out:#17261d}}
+:root[data-theme="dark"]{--bg:#141816;--card:#1d2320;--text:#e8ece9;--muted:#9aa59e;--line:#333c37;--accent:#3fb37a;--accent-text:#08140d;--out:#17261d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:760px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:4px 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 14px;margin-bottom:14px}
+.field{padding:12px 10px;margin:4px -10px;border-radius:10px;border-left:3px solid transparent;scroll-margin-top:12px;transition:background .2s,border-color .2s}
+.field.active{background:var(--out);border-left-color:var(--accent)}
+.field+.field{border-top:1px solid transparent}
+label,.lbl{display:block;font-size:12px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+input,textarea{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font:inherit;font-size:16px}
+input:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.ic{display:inline-flex;vertical-align:-.22em;margin-right:.45em;color:var(--accent);line-height:1;font-style:normal;letter-spacing:0;text-transform:none}
+.ic svg{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.chip[aria-checked="true"] .ic,.act .ic,.bar .ic{color:inherit}
+.chip,.act,.next,.prevhead button{display:inline-flex;align-items:center;justify-content:center}
+.chips.wide .chip{justify-content:flex-start}
+.tog .ic{margin-right:0}
+.chips+input{margin-top:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{flex:0 0 auto;min-height:44px;padding:9px 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--text);font:500 15px/1.2 inherit;cursor:pointer;touch-action:manipulation;transition:transform .08s}
+.chip:active{transform:scale(.96)}
+.chip[aria-checked="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-text);font-weight:700}
+.chips.wide .chip{border-radius:12px;text-align:left}
+.chips.collapsed .chip:not([aria-checked="true"]):not(.more){display:none}
+.chip.more{border-style:dashed;border-color:var(--accent);background:transparent;color:var(--accent);font-weight:600}
+.chip.more .ic{margin:0 0 0 .35em;color:inherit}
+.chip.more[hidden]{display:none}
+.step{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}
+.step+.step{border-top:1px solid var(--line)}
+.step b{display:block;font-size:16px}.step small{color:var(--muted);font-size:12px}
+.ctr{display:flex;align-items:center;gap:6px}
+.ctr button{width:48px;height:48px;border-radius:50%;border:1px solid var(--accent);background:var(--bg);color:var(--accent);font:600 28px/1 inherit;cursor:pointer;touch-action:manipulation;padding:0}
+.ctr button:active{background:var(--accent);color:var(--accent-text)}
+.ctr button:disabled{opacity:.3;border-color:var(--line);color:var(--muted);background:var(--bg)}
+.ctr output{min-width:40px;text-align:center;font-size:22px;font-weight:700}
+.next{margin-top:8px;background:transparent;border:0;color:var(--accent);font:600 15px inherit;min-height:40px;padding:0 4px;cursor:pointer}
+.prevhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.prevhead label{margin:0}
+.prevhead button{min-height:40px;padding:0 16px;border:1px solid var(--accent);border-radius:999px;background:transparent;color:var(--accent);font:700 14px inherit;cursor:pointer;touch-action:manipulation}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.calc{display:flex;flex-wrap:wrap;gap:8px;padding:6px 0 12px}
+.pill{flex:1;min-width:100px;background:var(--out);border-radius:10px;padding:8px 10px;font-size:13px;color:var(--muted)}
+.pill b{display:block;font-size:16px;color:var(--text)}
+.sec-h{font-size:13px;font-weight:700;color:var(--accent);margin:12px 0 0;text-transform:uppercase;letter-spacing:.04em}
+textarea#out{min-height:360px;background:var(--out);white-space:pre-wrap}
+canvas#card{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:10px;margin-top:8px}
+.tog{display:flex;align-items:center;gap:10px;margin:12px 0 4px;font-size:14px;text-transform:none;letter-spacing:0;font-weight:500;color:var(--text);min-height:44px}
+.tog input{width:22px;min-height:22px;height:22px;accent-color:var(--accent)}
+button.act{min-height:50px;padding:0 14px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-text);font:700 16px inherit;cursor:pointer;touch-action:manipulation}
+button.act:active{opacity:.85}
+button.sec{background:transparent;color:var(--text);border:1px solid var(--line);width:100%;margin-top:8px}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;gap:10px;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line)}
+.bar button{flex:1}
+.bar #wa{flex:1.4;background:#25d366;color:#06240f}
+.note{font-size:12px;color:var(--muted);margin-top:8px}
+#toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);max-width:90%;padding:10px 16px;border-radius:999px;background:var(--text);color:var(--bg);font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:20;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+.install{display:flex;align-items:center;gap:10px;margin:0 0 14px;padding:10px 12px;border:1px dashed var(--accent);border-radius:12px;background:var(--out);font-size:14px}
+.install[hidden]{display:none}
+.install>span:nth-child(2){flex:1}
+.install .chip{min-height:40px;background:var(--accent);color:var(--accent-text);border-color:var(--accent);font-weight:700}
+.install .chip[hidden]{display:none}
+.install .x{border:0;background:transparent;color:var(--muted);font-size:26px;line-height:1;width:40px;height:40px;cursor:pointer}
+@media(min-width:600px){.chip{min-height:40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1><i class="ic" data-i="bell"></i>Olive Group – Booking Confirmation</h1>
+<div class="install" id="install" hidden><i class="ic" data-i="mobile"></i><span id="installTxt"></span><button type="button" class="chip" id="installBtn" hidden>Install</button><button type="button" class="x" id="installX" aria-label="Dismiss">×</button></div>
+
+<div class="card">
+<div class="sec-h"><i class="ic" data-i="clipboard"></i>Booking</div>
+<div class="field" id="f-source"><label><i class="ic" data-i="bars"></i>Market Source</label><div class="chips" data-chips="source"></div><input type="hidden" id="source"></div>
+<div class="field" id="f-sales"><label for="sales"><i class="ic" data-i="user"></i>Salesperson</label><div class="chips" data-chips="sales"></div><input id="sales" placeholder="Or type a name" autocomplete="off" enterkeyhint="next"></div>
+<div class="field" id="f-bno"><label for="bno"><i class="ic" data-i="bookmark"></i>Booking No.</label><input id="bno" autocomplete="off" enterkeyhint="next"></div>
+<div class="field" id="f-guest"><label for="guest"><i class="ic" data-i="user"></i>Guest Name</label><input id="guest" autocomplete="off" autocapitalize="words" enterkeyhint="next"></div>
+<div class="field" id="f-cin"><label for="cin"><i class="ic" data-i="login"></i>Check-in Date</label><div class="chips" id="cinChips"></div><input type="date" id="cin"></div>
+<div class="field" id="f-cout"><label for="cout"><i class="ic" data-i="logout"></i>Check-out Date</label><div class="chips" id="coutChips"></div><input type="date" id="cout"></div>
+</div>
+
+<div class="card">
+<div class="sec-h"><i class="ic" data-i="wallet"></i>Tariff &amp; Payment</div>
+<div class="field" id="f-rate"><label for="rate"><i class="ic" data-i="rupee"></i>Per Day Tariff (₹, before GST)</label><input type="number" id="rate" inputmode="decimal" enterkeyhint="next"><input type="hidden" id="gst" value="5"></div>
+<div class="field" id="f-adv"><label for="adv"><i class="ic" data-i="wallet"></i>Advance Received (₹)</label><input type="number" id="adv" value="0" inputmode="decimal" enterkeyhint="next"></div>
+<div class="field" id="f-pay"><label><i class="ic" data-i="card"></i>Payment Mode</label><div class="chips" data-chips="pay"></div><input type="hidden" id="pay"></div>
+<div class="calc">
+<div class="pill"><span class="ic" data-i="moon"></span>Nights<b id="cNights">–</b></div>
+<div class="pill"><span class="ic" data-i="percent"></span>GST<b id="cGst">5%</b></div>
+<div class="pill"><span class="ic" data-i="rupee"></span>Total Tariff<b id="cTotal">–</b></div>
+<div class="pill"><span class="ic" data-i="clock"></span>Pending<b id="cPend">–</b></div>
+</div></div>
+
+<div class="card">
+<div class="sec-h"><i class="ic" data-i="hotel"></i>Guest &amp; Stay</div>
+<div class="field" id="f-email"><label for="email"><i class="ic" data-i="mail"></i>Email ID</label><input type="email" id="email" autocomplete="off" autocapitalize="none" enterkeyhint="next"></div>
+<div class="field" id="f-phone"><label for="phone"><i class="ic" data-i="phone"></i>Phone</label><input type="tel" id="phone" enterkeyhint="next"></div>
+<div class="field" id="f-prop"><label><i class="ic" data-i="hotel"></i>Hotel / Property</label><div class="chips wide" data-chips="prop"></div><input type="hidden" id="prop"></div>
+<div class="field" id="f-cat"><label for="cat"><i class="ic" data-i="bed"></i>Category</label><div class="chips wide" data-chips="cat"></div><input id="cat" placeholder="Or type a category" autocomplete="off" enterkeyhint="next"></div>
+<div class="field" id="f-room"><label for="room"><i class="ic" data-i="door"></i>Room No.</label><input id="room" autocomplete="off" enterkeyhint="next"></div>
+<div class="field" id="f-pax"><label><i class="ic" data-i="users"></i>PAX</label>
+<div class="step"><div><b><i class="ic" data-i="user"></i>Adults</b><small>Age 12+</small></div><div class="ctr"><button type="button" data-pax="adults" data-d="-1" aria-label="Fewer adults">−</button><output id="nAdults">1</output><button type="button" data-pax="adults" data-d="1" aria-label="More adults">+</button></div></div>
+<div class="step"><div><b><i class="ic" data-i="baby"></i>Infants</b><small>Under 2</small></div><div class="ctr"><button type="button" data-pax="infants" data-d="-1" aria-label="Fewer infants">−</button><output id="nInfants">0</output><button type="button" data-pax="infants" data-d="1" aria-label="More infants">+</button></div></div>
+<input type="hidden" id="pax" value="1 Adult"><button type="button" class="next" id="paxNext">Next<i class="ic" style="margin:0 0 0 .3em" data-i="down"></i></button></div>
+<div class="field" id="f-meal"><label><i class="ic" data-i="utensils"></i>Meal Plan</label><div class="chips" data-chips="meal"></div><input type="hidden" id="meal" value="EP"></div>
+<div class="field" id="f-req"><label for="req"><i class="ic" data-i="note"></i>Special Request</label><textarea id="req" rows="2"></textarea></div>
+</div>
+
+<div class="card" style="padding-bottom:14px">
+<div class="field"><div class="prevhead"><label for="out"><i class="ic" data-i="message"></i>Message preview (editable)</label><button type="button" id="copyTxt"><i class="ic" data-i="copy"></i>Copy text</button></div>
+<textarea id="out"></textarea></div>
+<label class="tog lbl"><input type="checkbox" id="withImg" checked> <span class="ic" data-i="image"></span>Attach summary image when sharing to WhatsApp</label>
+<canvas id="card" width="1080" height="600" aria-label="Booking summary image preview"></canvas>
+<button class="act sec" id="reset"><i class="ic" data-i="plus"></i>New booking</button>
+<div class="note">WhatsApp opens your share sheet with the image and message; pick your group and send. If the message text doesn't appear as a caption, it is already on your clipboard – just paste it.</div>
+</div>
+</div>
+
+<div class="bar">
+<button class="act" id="copy"><i class="ic" data-i="copy"></i>Copy message</button>
+<button class="act" id="wa"><i class="ic" data-i="send"></i>Share to WhatsApp</button>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+var $=function(i){return document.getElementById(i)};
+// Edit these lists to match your team, rooms and options
+var CHOICES={
+  source:["Website","Corporate","Walk-in","Inbound","Outbound","Repeat & Referral","Travel Agent/OTA","Medical"],
+  sales:["Neelam Parida","Meena Rawat","Jatin Verma","Harshit Morwal","Himanshu","Monu Mahawar","Rachana Parida","Arun Singh","Johna","Dusmanta","Vishal","Gagan","Rahul","Rohit"],
+  pay:["Razorpay – Olive","Razorpay – Zen","Razorpay – Bluo","Cash","UPI","Bank Transfer","Card / POS","Pay at Hotel","OTA Collect"],
+  prop:["Zen Studio - DLF Cybercity","Zen Suites - DLF Gurgaon","ZEN Medicity - Boutique Hotel Gurgaon","141","158","1120","JCM 41","Essel Tower","Sec 28","1208","MA-28","Jaipur - Vaishali Nagar"],
+  cat:["Deluxe Room","Executive Room with Balcony","Signature Room with Balcony","Deluxe Suite","Executive Suite with Balcony","Signature Suite with Balcony","Deluxe Studio","Executive Studio with Balcony","Signature Studio with Balcony","Standard","Superior","Premier"],
+  meal:["EP","CP","MAP","AP"]
+};
+var P={
+bars:'<path d="M3 20h18M6 20v-8M12 20V5M18 20v-5"/>',
+user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>',
+users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.9 3.1-7 7-7s7 3.1 7 7M16 4.5a3.5 3.5 0 0 1 0 7M18 13.5c2.4.9 4 3.1 4 6.5"/>',
+baby:'<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9.5h.01M15 9.5h.01"/>',
+bookmark:'<path d="M6 3h12v18l-6-4-6 4z"/>',
+calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+login:'<path d="M14 4h5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-5M4 12h10M10 8l4 4-4 4"/>',
+logout:'<path d="M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5M10 12h10M16 8l4 4-4 4"/>',
+rupee:'<path d="M7 5h10M7 9h10M7 5c5 0 7 1.5 7 4s-2 4-7 4l7 7"/>',
+percent:'<path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/>',
+wallet:'<rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2M6 6l9-3v3"/>',
+card:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/>',
+mail:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/>',
+phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
+hotel:'<path d="M4 21V4a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v17M15 9h4a1 1 0 0 1 1 1v11M2 21h20M8 7h3M8 11h3M8 15h3"/>',
+bed:'<path d="M3 18V6M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="1.5"/>',
+door:'<rect x="6" y="3" width="12" height="18" rx="1"/><path d="M14.5 12h.01M3 21h18"/>',
+utensils:'<path d="M7 3v7M4 3v5a3 3 0 0 0 6 0V3M7 11v10M17 21V3c-2.5 1.5-3.5 4-3.5 8h3.5"/>',
+feast:'<circle cx="12" cy="12" r="9"/><path d="M9 7v3a1.5 1.5 0 0 0 3 0V7M10.5 11v6M15 17V7c-1.4.8-2 2.2-2 4.5h2"/>',
+note:'<path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h5"/>',
+message:'<path d="M4 5h16v11H9l-5 4z"/>',
+globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+briefcase:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 13h18"/>',
+inbound:'<path d="M12 3v12M7 10l5 5 5-5M4 21h16"/>',
+outbound:'<path d="M12 21V9M7 14l5-5 5 5M4 3h16"/>',
+repeat:'<path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"/>',
+plane:'<path d="M21 3 3 10.5l7 3 3 7.5zM10 13.5 21 3"/>',
+cross:'<path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/>',
+cash:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/>',
+mobile:'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
+bank:'<path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18"/>',
+receipt:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6"/>',
+coffee:'<path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 10h2a2 2 0 0 1 0 4h-2M7 3v3M11 3v3"/>',
+sofa:'<path d="M4 11V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3M2 13a2 2 0 0 1 4 0v2h12v-2a2 2 0 0 1 4 0v5H2zM5 18v2M19 18v2"/>',
+home:'<path d="M3 11l9-8 9 8M5 10v10h14V10"/>',
+star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+landmark:'<path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18"/>',
+moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4 6.5 6.5 0 0 0 20 14.5z"/>',
+clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+copy:'<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>',
+plus:'<path d="M12 5v14M5 12h14"/>',
+image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m21 16-5-5L5 20"/>',
+chevD:'<path d="m6 9 6 6 6-6"/>',
+chevU:'<path d="m6 15 6-6 6 6"/>',
+down:'<path d="M12 5v14M6 13l6 6 6-6"/>',
+clipboard:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/>',
+bell:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/>',
+send:'<path d="M21 3 3 10.5l7 3 3 7.5z"/>',
+sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+share:'<path d="M12 15V3M8 7l4-4 4 4M5 12v8h14v-8"/>',
+sunrise:'<path d="M12 3v4M5 12H3M21 12h-2M6.3 6.3l1.4 1.4M17.7 6.3l-1.4 1.4M7 17a5 5 0 0 1 10 0M2 21h20"/>'
+};
+function ico(n){var i=document.createElement("i");i.className="ic";i.dataset.i=n;paint(i);return i}
+function paint(el){el.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+(P[el.dataset.i]||"")+'</svg>'}
+[].forEach.call(document.querySelectorAll("[data-i]"),paint);
+
+var ICONS={
+  source:{"Website":"globe","Corporate":"briefcase","Walk-in":"login","Inbound":"inbound","Outbound":"outbound","Repeat & Referral":"repeat","Travel Agent/OTA":"plane","Medical":"cross"},
+  pay:{"Razorpay – Olive":"card","Razorpay – Zen":"card","Razorpay – Bluo":"card","Cash":"cash","UPI":"mobile","Bank Transfer":"bank","Card / POS":"receipt","Pay at Hotel":"hotel","OTA Collect":"plane"},
+  meal:{"EP":"bed","CP":"coffee","MAP":"utensils","AP":"feast"}
+};
+// icon for options without an explicit entry
+function iconFor(id,val){
+  if(ICONS[id]&&ICONS[id][val])return ICONS[id][val];
+  if(id==="sales")return "user";
+  if(id==="prop")return /Jaipur/.test(val)?"landmark":"hotel";
+  if(id==="cat")return /Suite/.test(val)?"sofa":/Studio/.test(val)?"home":/Room/.test(val)?"bed":"star";
+  return "";
+}
+var LABELS={};
+// GST rule: 5% up to ₹7,500 per night, 18% above
+var GST_LIMIT=7500,gstFor=function(rate){return rate>GST_LIMIT?18:5};
+
+var inr=function(n){return "₹"+Number(n).toLocaleString("en-IN",{maximumFractionDigits:2})};
+var fmtDate=function(v){if(!v)return "";var p=v.split("-");var m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];return p[2]+" "+m[+p[1]-1]+" "+p[0]};
+var nights=function(){var a=$("cin").value,b=$("cout").value;if(!a||!b)return 0;var d=Math.round((new Date(b)-new Date(a))/864e5);return d>0?d:0};
+var ids=["source","sales","bno","guest","cin","cout","rate","gst","adv","pay","email","phone","prop","cat","room","pax","meal","req"];
+var v=function(i){return $(i).value.trim()};
+
+/* ---------- toast ---------- */
+var toastT;
+function toast(msg,ms){var t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove("show")},ms||2200)}
+
+/* ---------- chips + auto-advance ---------- */
+var fields=[].slice.call(document.querySelectorAll(".card > .field[id^='f-']"));
+function setActive(f){fields.forEach(function(x){x.classList.toggle("active",x===f)})}
+function advance(f){
+  var i=fields.indexOf(f),n=fields[i+1];
+  if(!n)return;
+  setActive(n);
+  n.scrollIntoView({behavior:"smooth",block:"start"});
+  // focus plain text fields only (not ones that offer chips, not date pickers)
+  var inp=n.querySelector("input:not([type=hidden]):not([type=date]),textarea");
+  if(inp&&!n.querySelector(".chips")){setTimeout(function(){try{inp.focus({preventScroll:true})}catch(e){}},400)}
+}
+function syncChips(id){
+  var box=document.querySelector('[data-chips="'+id+'"]');if(!box)return;
+  var cur=$(id).value.trim();
+  [].forEach.call(box.querySelectorAll(".chip[data-val]"),function(b){b.setAttribute("aria-checked",String(b.dataset.val===cur))});
+  refreshBox(box);
+}
+/* Once an option is picked, hide the rest behind a "Change" button */
+function refreshBox(box){
+  var more=box._more;if(!more)return;
+  var sel=box.querySelector('.chip[aria-checked="true"]');
+  if(!sel)box.classList.remove("open");
+  var open=box.classList.contains("open");
+  box.classList.toggle("collapsed",!!sel&&!open);
+  more.hidden=!sel;
+  more.textContent="";
+  more.appendChild(document.createTextNode(open?"Close":"Change"));
+  more.appendChild(ico(open?"chevU":"chevD"));
+  more.setAttribute("aria-expanded",String(open));
+}
+function addMore(box){
+  var m=document.createElement("button");m.type="button";m.className="chip more";m.hidden=true;
+  m.addEventListener("click",function(){box.classList.toggle("open");refreshBox(box)});
+  box.appendChild(m);box._more=m;
+}
+Object.keys(CHOICES).forEach(function(id){
+  var box=document.querySelector('[data-chips="'+id+'"]');
+  box.setAttribute("role","radiogroup");
+  CHOICES[id].forEach(function(val){
+    var b=document.createElement("button");
+    b.type="button";b.className="chip";b.setAttribute("role","radio");
+    b.dataset.val=val;
+    var ic=iconFor(id,val);
+    if(ic)b.appendChild(ico(ic));
+    b.appendChild(document.createTextNode(LABELS[id]?LABELS[id](val):val));
+    b.addEventListener("click",function(){
+      $(id).value=val;
+      box.classList.remove("open");
+      syncChips(id);build();
+      advance($("f-"+id));
+    });
+    box.appendChild(b);
+  });
+  addMore(box);
+  syncChips(id);
+  $(id).addEventListener("input",function(){syncChips(id)});
+});
+// Enter / "Next" on the keyboard moves on too
+fields.forEach(function(f){
+  f.addEventListener("focusin",function(){setActive(f)});
+  f.addEventListener("keydown",function(e){
+    if(e.key==="Enter"&&e.target.tagName==="INPUT"){e.preventDefault();advance(f)}
+  });
+});
+/* ---------- dates: quick buttons + calendar picker ---------- */
+function ymd(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function parseYmd(x){var p=x.split("-");return new Date(+p[0],+p[1]-1,+p[2])}
+function addDays(x,n){var d=x?parseYmd(x):new Date();d.setDate(d.getDate()+n);return ymd(d)}
+function openPicker(inp){try{inp.focus({preventScroll:true});if(inp.showPicker)inp.showPicker();else inp.click()}catch(e){}}
+function mkChip(box,label,icon,fn){
+  var b=document.createElement("button");b.type="button";b.className="chip";b.setAttribute("role","radio");
+  if(icon)b.appendChild(ico(icon));b.appendChild(document.createTextNode(label));
+  b.addEventListener("click",fn);box.appendChild(b);return b;
+}
+var cinBox=$("cinChips"),coutBox=$("coutChips"),dateChips={};
+dateChips.today=mkChip(cinBox,"Today","sun",function(){setCin(ymd(new Date()))});
+dateChips.tom=mkChip(cinBox,"Tomorrow","sunrise",function(){setCin(addDays("",1))});
+dateChips.cinPick=mkChip(cinBox,"Pick date","calendar",function(){openPicker($("cin"))});
+dateChips.n=[1,2,3,4].map(function(n){
+  return mkChip(coutBox,n+(n>1?" Nights":" Night"),null,function(){
+    if(!$("cin").value){toast("Choose check-in first");$("f-cin").scrollIntoView({block:"start"});setActive($("f-cin"));return}
+    $("cout").value=addDays($("cin").value,n);dateChange("cout",true);
+  });
+});
+dateChips.coutPick=mkChip(coutBox,"Pick date","calendar",function(){
+  if(!$("cin").value){toast("Choose check-in first");$("f-cin").scrollIntoView({block:"start"});setActive($("f-cin"));return}
+  openPicker($("cout"));
+});
+function setCin(val){$("cin").value=val;dateChange("cin",true)}
+function syncDates(){
+  var cin=$("cin").value,cout=$("cout").value;
+  $("cout").min=cin?addDays(cin,1):"";
+  if(cin&&cout&&cout<=cin){$("cout").value=cout="";}
+  dateChips.today.setAttribute("aria-checked",String(cin===ymd(new Date())));
+  dateChips.tom.setAttribute("aria-checked",String(cin===addDays("",1)));
+  dateChips.cinPick.setAttribute("aria-checked",String(!!cin&&cin!==ymd(new Date())&&cin!==addDays("",1)));
+  var nn=cin&&cout?nights():0,preset=nn>=1&&nn<=4;
+  dateChips.n.forEach(function(b,i){b.setAttribute("aria-checked",String(nn===i+1))});
+  dateChips.coutPick.setAttribute("aria-checked",String(!!cout&&!preset));
+  refreshBox(cinBox);refreshBox(coutBox);
+}
+function dateChange(id,go){cinBox.classList.remove("open");coutBox.classList.remove("open");syncDates();build();if($(id).value&&go)advance($("f-"+id))}
+["cin","cout"].forEach(function(id){
+  var el=$(id);
+  el.addEventListener("change",function(){dateChange(id,true)});   // picker done -> next field
+  el.addEventListener("click",function(){openPicker(el)});         // tapping the box opens the calendar directly
+});
+addMore(cinBox);addMore(coutBox);
+syncDates();
+
+/* ---------- PAX steppers ---------- */
+var pax={adults:1,infants:0};
+function paxRender(){
+  $("nAdults").textContent=pax.adults;$("nInfants").textContent=pax.infants;
+  $("pax").value=pax.adults+" Adult"+(pax.adults>1?"s":"")+(pax.infants?" + "+pax.infants+" Infant"+(pax.infants>1?"s":""):"");
+  document.querySelector('[data-pax=adults][data-d="-1"]').disabled=pax.adults<=1;
+  document.querySelector('[data-pax=infants][data-d="-1"]').disabled=pax.infants<=0;
+}
+[].forEach.call(document.querySelectorAll("[data-pax]"),function(b){
+  b.addEventListener("click",function(){
+    var k=b.dataset.pax;pax[k]=Math.min(20,Math.max(k==="adults"?1:0,pax[k]+ +b.dataset.d));
+    paxRender();build();
+  });
+});
+$("paxNext").addEventListener("click",function(){advance($("f-pax"))});
+
+/* ---------- message ---------- */
+function build(){
+  var n=nights(),rate=+$("rate").value||0,gst=gstFor(rate),adv=+$("adv").value||0;
+  $("gst").value=gst;$("cGst").textContent=gst+"%";
+  var total=Math.round(rate*n*(1+gst/100)*100)/100,pend=Math.max(total-adv,0);
+  $("cNights").textContent=n?n+" Night"+(n>1?"s":""):"–";
+  $("cTotal").textContent=n&&rate?inr(total):"–";
+  $("cPend").textContent=n&&rate?inr(pend):"–";
+  var msg=
+"*New Booking Done*\n\n"+
+"Market Source: "+v("source")+"\n"+
+"Salesperson: "+v("sales")+"\n"+
+"Booking No.: "+v("bno")+"\n"+
+"Guest Name: "+v("guest")+"\n"+
+"Check-in Date: "+fmtDate(v("cin"))+"\n"+
+"Check-out Date: "+fmtDate(v("cout"))+"\n"+
+"Total Nights: "+(n?n+" Night"+(n>1?"s":""):"")+"\n\n"+
+"Per Day Tariff: "+(rate?inr(rate):"")+" + "+gst+"% GST\n"+
+"Total Tariff: "+(n&&rate?inr(total)+"/-":"")+"\n"+
+"Advance Received: "+inr(adv)+"/-\n"+
+"Payment Mode: "+v("pay")+"\n"+
+"Pending Amount: "+(n&&rate?inr(pend)+"/-":"")+"\n\n"+
+"*Guest Details:*\n"+
+"Email ID: "+v("email")+"\n"+
+"Phone: "+v("phone")+"\n\n"+
+"*Property Details:*\n"+
+"Hotel/Property: "+v("prop")+"\n"+
+"Category: "+v("cat")+"\n"+
+"Room No.: "+v("room")+"\n"+
+"PAX: "+v("pax")+"\n"+
+"Meal Plan: "+v("meal")+"\n\n"+
+"Special Request: "+v("req");
+  $("out").value=msg;
+  queueCard();
+}
+ids.forEach(function(i){$(i).addEventListener("input",build);$(i).addEventListener("change",build)});
+
+/* ---------- summary image (drawn on a canvas, shared as PNG) ---------- */
+var cardQ=0;
+function queueCard(){
+  cancelAnimationFrame(cardQ);
+  cardQ=requestAnimationFrame(drawCard);
+}
+function wrap(ctx,text,maxW){
+  var words=String(text).split(/\s+/),lines=[],line="";
+  words.forEach(function(w){
+    var t=line?line+" "+w:w;
+    if(ctx.measureText(t).width>maxW&&line){lines.push(line);line=w}else line=t;
+  });
+  if(line)lines.push(line);
+  return lines.length?lines:[""];
+}
+function drawCard(){
+  var n=nights(),rate=+$("rate").value||0,gst=gstFor(rate),adv=+$("adv").value||0;
+  var total=Math.round(rate*n*(1+gst/100)*100)/100,pend=Math.max(total-adv,0);
+  var c=$("card"),ctx=c.getContext("2d"),W=1080,P=56,LX=P,VX=360,VW=W-P-VX,F='system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+  var nStr=n?n+" Night"+(n>1?"s":""):"";
+  var rows=[
+    ["Guest",v("guest")],["Booking No.",v("bno")],["Property",v("prop")],
+    ["Category",v("cat")],["Room No.",v("room")],
+    ["Check-in",fmtDate(v("cin"))],["Check-out",fmtDate(v("cout"))],["Stay",nStr],
+    ["PAX",v("pax")],["Meal Plan",v("meal")],["Salesperson",v("sales")],["Source",v("source")]
+  ].filter(function(r){return r[1]});
+  if(v("req"))rows.push(["Special Request",v("req")]);
+  var money=[
+    ["Per Day",rate?inr(rate)+" + "+gst+"% GST":""],
+    ["Total Tariff",n&&rate?inr(total)+"/-":""],
+    ["Advance ("+(v("pay")||"–")+")",inr(adv)+"/-"],
+    ["Pending",n&&rate?inr(pend)+"/-":""]
+  ].filter(function(r){return r[1]});
+  // measure
+  ctx.font="500 32px "+F;
+  var LH=44,lay=rows.map(function(r){var l=wrap(ctx,r[1],VW);return {k:r[0],lines:l,h:l.length*LH+26}});
+  var rowsH=lay.reduce(function(s,r){return s+r.h},0);
+  var HEAD=170,MONEYH=money.length*58+50,H=HEAD+30+rowsH+30+MONEYH+60;
+  c.height=H;ctx=c.getContext("2d");
+  ctx.fillStyle="#ffffff";ctx.fillRect(0,0,W,H);
+  ctx.fillStyle="#1f7a4d";ctx.fillRect(0,0,W,HEAD);
+  ctx.fillStyle="#ffffff";ctx.textBaseline="alphabetic";
+  ctx.font="800 50px "+F;ctx.fillText("New Booking Confirmed",P,80);
+  ctx.font="500 30px "+F;ctx.globalAlpha=.9;
+  ctx.fillText(v("bno")?"Booking No. "+v("bno"):"Booking details",P,128);ctx.globalAlpha=1;
+  var y=HEAD+30;
+  lay.forEach(function(r,i){
+    ctx.fillStyle="#66706a";ctx.font="600 25px "+F;ctx.fillText(r.k.toUpperCase(),LX,y+34);
+    ctx.fillStyle="#1d2420";ctx.font="500 32px "+F;
+    r.lines.forEach(function(l,j){ctx.fillText(l,VX,y+34+j*LH)});
+    y+=r.h;
+    ctx.fillStyle="#e4e8e4";ctx.fillRect(P,y-8,W-2*P,2);
+  });
+  y+=22;
+  ctx.fillStyle="#eef6f0";
+  ctx.beginPath();
+  if(ctx.roundRect)ctx.roundRect(P,y,W-2*P,MONEYH,24);else ctx.rect(P,y,W-2*P,MONEYH);
+  ctx.fill();
+  money.forEach(function(r,i){
+    var last=r[0]==="Pending",yy=y+54+i*58;
+    ctx.fillStyle="#66706a";ctx.font="500 28px "+F;ctx.textAlign="left";ctx.fillText(r[0],P+30,yy);
+    ctx.fillStyle=last?"#b3261e":"#1d2420";ctx.font=(last||r[0]==="Total Tariff"?"800 34px ":"600 30px ")+F;ctx.textAlign="right";
+    ctx.fillText(r[1],W-P-30,yy);
+  });
+  ctx.textAlign="left";
+}
+function cardFile(){
+  cancelAnimationFrame(cardQ);drawCard();   // always share the latest values
+  var d=$("card").toDataURL("image/png").split(",")[1],bin=atob(d),a=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);
+  var name="booking-"+(v("bno")||v("guest")||"confirmation").replace(/[^\w-]+/g,"_")+".png";
+  return new File([a],name,{type:"image/png"});
+}
+
+/* ---------- clipboard (iOS Safari, Android Chrome, desktop) ---------- */
+function legacyCopy(t){
+  var ta=document.createElement("textarea");
+  ta.value=t;ta.style.cssText="position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px";
+  ta.contentEditable="true";ta.readOnly=false;
+  document.body.appendChild(ta);
+  var ok=false;
+  try{
+    var r=document.createRange();r.selectNodeContents(ta);
+    var s=window.getSelection();s.removeAllRanges();s.addRange(r);
+    ta.setSelectionRange(0,t.length);
+    ok=document.execCommand("copy");
+  }catch(e){}
+  document.body.removeChild(ta);
+  return ok;
+}
+// Returns a promise<boolean>. Must be called from a tap handler.
+function copyText(t){
+  var fallback=function(){return legacyCopy(t)};
+  if(navigator.clipboard&&navigator.clipboard.writeText&&window.isSecureContext){
+    return navigator.clipboard.writeText(t).then(function(){return true},fallback);
+  }
+  return Promise.resolve(fallback());
+}
+$("copy").addEventListener("click",function(){
+  copyText($("out").value).then(function(ok){
+    if(ok)toast("Message copied ✓");
+    else{var o=$("out");o.focus();o.select();toast("Select-all done – tap Copy in the menu",3500)}
+  });
+});
+
+$("copyTxt").addEventListener("click",function(){
+  copyText($("out").value).then(function(ok){
+    if(ok)toast("Text copied ✓");
+    else{var o=$("out");o.focus();o.select();toast("Select-all done – tap Copy in the menu",3500)}
+  });
+});
+
+/* ---------- WhatsApp share (image + text) ---------- */
+$("wa").addEventListener("click",function(){
+  var t=$("out").value,wantImg=$("withImg").checked;
+  var textOnly=function(){window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank","noopener")};
+  if(!wantImg){textOnly();return}
+  var f=cardFile();   // built synchronously so the tap's permission to share isn't lost
+  if(navigator.canShare&&navigator.canShare({files:[f]})){
+    copyText(t);      // backup: some WhatsApp versions drop the caption, so it's on the clipboard to paste
+    navigator.share({files:[f],text:t,title:"New Booking"}).then(function(){
+      toast("Shared. If no caption showed, paste – it's copied.",3000);
+    },function(e){if(e&&e.name!=="AbortError")toast("Couldn't open the share sheet")});
+  }else{
+    // Desktop / browsers without file sharing: open WhatsApp with the text and save the image to attach manually
+    textOnly();
+    var a=document.createElement("a");a.href=URL.createObjectURL(f);a.download=f.name;
+    document.body.appendChild(a);a.click();a.remove();
+    toast("Image saved – attach it in WhatsApp",3500);
+  }
+});
+
+$("reset").addEventListener("click",function(){
+  ["bno","guest","cin","cout","rate","email","phone","room","req"].forEach(function(i){$(i).value=""});
+  $("adv").value=0;syncDates();pax.adults=1;pax.infants=0;paxRender();build();
+  setActive(fields[0]);window.scrollTo({top:0,behavior:"smooth"});
+});
+
+/* ---------- URL shortcuts ----------
+   e.g. Booking-Confirmation.html?salesperson=neelam&property=cybercity&payment=upi
+   keys: source, salesperson (sales), payment (pay), property (prop), category (cat),
+         meal, adults, infants, bno, guest, advance (adv)
+   Chip values match case-insensitively: exact, then "starts with", then "contains". */
+var ALIAS={salesperson:"sales",payment:"pay",property:"prop",category:"cat",advance:"adv"};
+var FREE={sales:1,cat:1};
+function applyParams(){
+  var q=new URLSearchParams(location.search),done={};
+  q.forEach(function(raw,key){
+    key=key.toLowerCase();key=ALIAS[key]||key;raw=raw.trim();if(!raw)return;
+    var lo=raw.toLowerCase();
+    if(key==="adults"||key==="infants"){
+      var n=parseInt(raw,10);if(isNaN(n))return;
+      pax[key]=Math.min(20,Math.max(key==="adults"?1:0,n));paxRender();done.pax=1;return;
+    }
+    if(CHOICES[key]){
+      var L=CHOICES[key],m=L.filter(function(x){return x.toLowerCase()===lo})[0]
+        ||L.filter(function(x){return x.toLowerCase().indexOf(lo)===0})[0]
+        ||L.filter(function(x){return x.toLowerCase().indexOf(lo)>-1})[0];
+      if(m||FREE[key]){$(key).value=m||raw;syncChips(key);done[key]=1}
+    }else if(["bno","guest","adv"].indexOf(key)>-1){$(key).value=raw;done[key]=1}
+  });
+  build();
+  var first=fields.filter(function(f){return !done[f.id.slice(2)]})[0];
+  if(Object.keys(done).length&&first){setActive(first);setTimeout(function(){first.scrollIntoView({block:"start"})},50)}
+}
+
+paxRender();build();applyParams();
+
+/* ---------- install as an app (PWA) ---------- */
+var standalone=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone;
+var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+var hideInstall=function(remember){$("install").hidden=true;if(remember){try{localStorage.setItem("installDismissed","1")}catch(e){}}};
+var dismissed=false;try{dismissed=!!localStorage.getItem("installDismissed")}catch(e){}
+var installEvt=null;
+window.addEventListener("beforeinstallprompt",function(e){            // Android / desktop Chrome & Edge
+  e.preventDefault();installEvt=e;
+  if(standalone||dismissed)return;
+  $("installTxt").textContent="Install this app for quick access";
+  $("installBtn").hidden=false;$("install").hidden=false;
+});
+$("installBtn").addEventListener("click",function(){
+  if(!installEvt)return;
+  installEvt.prompt();
+  installEvt.userChoice.then(function(){installEvt=null;hideInstall(false)});
+});
+window.addEventListener("appinstalled",function(){hideInstall(false)});
+$("installX").addEventListener("click",function(){hideInstall(true)});
+if(isIOS&&!standalone&&!dismissed){                                    // iPhone / iPad Safari has no install prompt
+  var t=$("installTxt");t.textContent="Install: tap ";t.appendChild(ico("share"));
+  t.appendChild(document.createTextNode(" Share, then “Add to Home Screen”"));
+  $("install").hidden=false;
+}
+if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){
+  window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})});
+}
+</script>
+</body>
+</html>
