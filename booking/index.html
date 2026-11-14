@@ -13,13 +13,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Bookings">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <style>
 :root{--bg:#f6f7f5;--card:#fff;--text:#1d2420;--muted:#66706a;--line:#d9ded9;--accent:#1f7a4d;--accent-text:#fff;--out:#eef6f0}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141816;--card:#1d2320;--text:#e8ece9;--muted:#9aa59e;--line:#333c37;--accent:#3fb37a;--accent-text:#08140d;--out:#17261d}}
 :root[data-theme="dark"]{--bg:#141816;--card:#1d2320;--text:#e8ece9;--muted:#9aa59e;--line:#333c37;--accent:#3fb37a;--accent-text:#08140d;--out:#17261d}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
 .wrap{max-width:760px;margin:0 auto;padding:16px}
 h1{font-size:20px;margin:4px 0 14px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 14px;margin-bottom:14px}
@@ -69,11 +70,8 @@ canvas#card{display:block;width:100%;height:auto;border:1px solid var(--line);bo
 button.act{min-height:50px;padding:0 14px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-text);font:700 16px inherit;cursor:pointer;touch-action:manipulation}
 button.act:active{opacity:.85}
 button.sec{background:transparent;color:var(--text);border:1px solid var(--line);width:100%;margin-top:8px}
-.bar{position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;gap:10px;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line)}
-.bar button{flex:1}
-.bar #wa{flex:1.4;background:#25d366;color:#06240f}
 .note{font-size:12px;color:var(--muted);margin-top:8px}
-#toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);max-width:90%;padding:10px 16px;border-radius:999px;background:var(--text);color:var(--bg);font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:20;text-align:center}
+#toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);max-width:90%;padding:10px 16px;border-radius:999px;background:var(--text);color:var(--bg);font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:40;text-align:center}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 .install{display:flex;align-items:center;gap:10px;margin:0 0 14px;padding:10px 12px;border:1px dashed var(--accent);border-radius:12px;background:var(--out);font-size:14px}
 .install[hidden]{display:none}
@@ -81,12 +79,65 @@ button.sec{background:transparent;color:var(--text);border:1px solid var(--line)
 .install .chip{min-height:40px;background:var(--accent);color:var(--accent-text);border-color:var(--accent);font-weight:700}
 .install .chip[hidden]{display:none}
 .install .x{border:0;background:transparent;color:var(--muted);font-size:26px;line-height:1;width:40px;height:40px;cursor:pointer}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 14px}
+.top h1{margin:0}
+.iconbtn{width:44px;height:44px;flex:0 0 auto;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.iconbtn .ic{margin:0;color:inherit}
+.endbtns{display:flex;gap:10px;margin-top:14px}
+.endbtns .act{flex:1}
+.act.wa{background:#25d366;color:#06240f}
+.money{position:relative}
+.money>span{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-weight:700;color:var(--muted);font-size:17px;pointer-events:none}
+.money>input{padding-left:32px}
+.phone{display:flex;gap:8px}
+.ccbtn{flex:0 0 auto;min-width:92px;min-height:46px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font:700 16px inherit;display:inline-flex;align-items:center;justify-content:center;gap:2px;cursor:pointer}
+.ccbtn .ic{margin:0 0 0 4px;color:var(--accent)}
+.hint{font-size:12px;color:var(--muted);margin-top:6px;min-height:0}
+.hint:empty{display:none}
+.hint.ok{color:var(--accent)}
+.hint.bad,.bad{color:#d9534f}
+input[aria-invalid="true"]{border-color:#d9534f}
+.sugg{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.sugg:empty{display:none}
+.sugg .chip{min-height:38px;font-size:14px;border-color:var(--accent);color:var(--accent);background:transparent}
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:15;height:52px;padding:0 22px;border-radius:999px;border:0;background:var(--accent);color:var(--accent-text);font:700 16px inherit;display:inline-flex;align-items:center;box-shadow:0 8px 22px rgba(0,0,0,.3);cursor:pointer;touch-action:manipulation}
+.fab:active{transform:scale(.96)}
+.fab .ic,.pillbtn .ic{color:inherit}
+html.noscroll,html.noscroll body{overflow:hidden}
+.sheet{position:fixed;inset:0;z-index:30;display:flex;align-items:flex-end;justify-content:center}
+.sheet[hidden]{display:none}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.5)}
+.panel{position:relative;width:100%;max-width:560px;max-height:92vh;max-height:92dvh;background:var(--bg);border-radius:20px 20px 0 0;display:flex;flex-direction:column;overflow:hidden;animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.panel-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--card)}
+.panel-h h2{font-size:17px;margin:0;display:flex;align-items:center}
+.panel-b{overflow:auto;padding:6px 16px 120px;flex:1;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.floatbar{position:absolute;left:0;right:0;bottom:0;display:flex;gap:10px;justify-content:center;padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px));pointer-events:none}
+.floatbar>*{pointer-events:auto;box-shadow:0 6px 18px rgba(0,0,0,.28)}
+.pillbtn{height:52px;padding:0 20px;border-radius:999px;border:0;background:var(--accent);color:var(--accent-text);font:700 15px inherit;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation}
+.pillbtn.icon{width:52px;padding:0;background:var(--card);color:var(--text);border:1px solid var(--line)}
+.pillbtn.wa{background:#25d366;color:#06240f;flex:1;max-width:240px}
+.rv-h{display:flex;align-items:center;font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.04em;margin:16px 0 2px}
+.rv-note{margin:12px 0 0;padding:8px 12px;border-radius:10px;background:var(--out);font-size:13px;color:var(--muted)}
+.rv-row{display:flex;align-items:flex-start;gap:4px;width:100%;padding:10px 0;border:0;border-bottom:1px solid var(--line);background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.rv-row>.ic{margin:2px 8px 0 0;font-size:1.1em}
+.rv-k{color:var(--muted);font-size:11px;text-transform:uppercase;font-weight:600;letter-spacing:.03em}
+.rv-v{font-size:15px;font-weight:600;word-break:break-word}
+.rv-v.empty{color:var(--muted);font-style:italic;font-weight:400}
+.cc-q{margin:12px 16px;width:calc(100% - 32px)}
+.cc-list{overflow:auto;flex:1;padding:0 16px 24px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.cc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:50px;padding:10px 4px;border:0;border-bottom:1px solid var(--line);background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.cc-row b{font-weight:600;color:var(--muted)}
+.cc-row.sel{color:var(--accent);font-weight:700}
+.cc-row.sel b{color:var(--accent)}
+.cc-row .ic{margin:0 6px 0 0}
+@media(min-width:600px){.sheet{align-items:center}.panel{border-radius:20px}}
 @media(min-width:600px){.chip{min-height:40px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1><i class="ic" data-i="bell"></i>Olive Group – Booking Confirmation</h1>
+<div class="top"><h1><i class="ic" data-i="bell"></i>Olive Group – Booking Confirmation</h1><button type="button" class="iconbtn" id="theme"></button></div>
 <div class="install" id="install" hidden><i class="ic" data-i="mobile"></i><span id="installTxt"></span><button type="button" class="chip" id="installBtn" hidden>Install</button><button type="button" class="x" id="installX" aria-label="Dismiss">×</button></div>
 
 <div class="card">
@@ -101,8 +152,8 @@ button.sec{background:transparent;color:var(--text);border:1px solid var(--line)
 
 <div class="card">
 <div class="sec-h"><i class="ic" data-i="wallet"></i>Tariff &amp; Payment</div>
-<div class="field" id="f-rate"><label for="rate"><i class="ic" data-i="rupee"></i>Per Day Tariff (₹, before GST)</label><input type="number" id="rate" inputmode="decimal" enterkeyhint="next"><input type="hidden" id="gst" value="5"></div>
-<div class="field" id="f-adv"><label for="adv"><i class="ic" data-i="wallet"></i>Advance Received (₹)</label><input type="number" id="adv" value="0" inputmode="decimal" enterkeyhint="next"></div>
+<div class="field" id="f-rate"><label for="rate"><i class="ic" data-i="rupee"></i>Per Day Tariff (before GST)</label><div class="money"><span>₹</span><input type="number" id="rate" inputmode="decimal" placeholder="0" enterkeyhint="next"></div><input type="hidden" id="gst" value="5"></div>
+<div class="field" id="f-adv"><label for="adv"><i class="ic" data-i="wallet"></i>Advance Received</label><div class="money"><span>₹</span><input type="number" id="adv" value="0" inputmode="decimal" enterkeyhint="next"></div></div>
 <div class="field" id="f-pay"><label><i class="ic" data-i="card"></i>Payment Mode</label><div class="chips" data-chips="pay"></div><input type="hidden" id="pay"></div>
 <div class="calc">
 <div class="pill"><span class="ic" data-i="moon"></span>Nights<b id="cNights">–</b></div>
@@ -113,11 +164,11 @@ button.sec{background:transparent;color:var(--text);border:1px solid var(--line)
 
 <div class="card">
 <div class="sec-h"><i class="ic" data-i="hotel"></i>Guest &amp; Stay</div>
-<div class="field" id="f-email"><label for="email"><i class="ic" data-i="mail"></i>Email ID</label><input type="email" id="email" autocomplete="off" autocapitalize="none" enterkeyhint="next"></div>
-<div class="field" id="f-phone"><label for="phone"><i class="ic" data-i="phone"></i>Phone</label><input type="tel" id="phone" enterkeyhint="next"></div>
+<div class="field" id="f-email"><label for="email"><i class="ic" data-i="mail"></i>Email ID</label><input type="email" id="email" inputmode="email" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="name@gmail.com" enterkeyhint="next"><div class="sugg" id="emailSugg"></div><div class="hint" id="emailHint"></div></div>
+<div class="field" id="f-phone"><label for="phone"><i class="ic" data-i="phone"></i>Phone</label><div class="phone"><button type="button" class="ccbtn" id="ccBtn" aria-label="Choose country code"><span id="ccDial">+91</span></button><input type="tel" id="phone" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="Mobile number" autocomplete="off" enterkeyhint="next"></div><div class="hint" id="ccName">India (+91)</div><div class="hint bad" id="phoneHint"></div></div>
 <div class="field" id="f-prop"><label><i class="ic" data-i="hotel"></i>Hotel / Property</label><div class="chips wide" data-chips="prop"></div><input type="hidden" id="prop"></div>
 <div class="field" id="f-cat"><label for="cat"><i class="ic" data-i="bed"></i>Category</label><div class="chips wide" data-chips="cat"></div><input id="cat" placeholder="Or type a category" autocomplete="off" enterkeyhint="next"></div>
-<div class="field" id="f-room"><label for="room"><i class="ic" data-i="door"></i>Room No.</label><input id="room" autocomplete="off" enterkeyhint="next"></div>
+<div class="field" id="f-room"><label for="room"><i class="ic" data-i="door"></i>Room No.</label><input id="room" inputmode="numeric" pattern="[0-9]*" autocomplete="off" enterkeyhint="next"></div>
 <div class="field" id="f-pax"><label><i class="ic" data-i="users"></i>PAX</label>
 <div class="step"><div><b><i class="ic" data-i="user"></i>Adults</b><small>Age 12+</small></div><div class="ctr"><button type="button" data-pax="adults" data-d="-1" aria-label="Fewer adults">−</button><output id="nAdults">1</output><button type="button" data-pax="adults" data-d="1" aria-label="More adults">+</button></div></div>
 <div class="step"><div><b><i class="ic" data-i="baby"></i>Infants</b><small>Under 2</small></div><div class="ctr"><button type="button" data-pax="infants" data-d="-1" aria-label="Fewer infants">−</button><output id="nInfants">0</output><button type="button" data-pax="infants" data-d="1" aria-label="More infants">+</button></div></div>
@@ -131,15 +182,39 @@ button.sec{background:transparent;color:var(--text);border:1px solid var(--line)
 <textarea id="out"></textarea></div>
 <label class="tog lbl"><input type="checkbox" id="withImg" checked> <span class="ic" data-i="image"></span>Attach summary image when sharing to WhatsApp</label>
 <canvas id="card" width="1080" height="600" aria-label="Booking summary image preview"></canvas>
+<div class="endbtns">
+<button class="act" id="copy"><i class="ic" data-i="copy"></i>Copy message</button>
+<button class="act wa" id="wa"><i class="ic" data-i="send"></i>Share to WhatsApp</button>
+</div>
 <button class="act sec" id="reset"><i class="ic" data-i="plus"></i>New booking</button>
 <div class="note">WhatsApp opens your share sheet with the image and message; pick your group and send. If the message text doesn't appear as a caption, it is already on your clipboard – just paste it.</div>
 </div>
 </div>
 
-<div class="bar">
-<button class="act" id="copy"><i class="ic" data-i="copy"></i>Copy message</button>
-<button class="act" id="wa"><i class="ic" data-i="send"></i>Share to WhatsApp</button>
+<button type="button" class="fab" id="reviewPill"><i class="ic" data-i="eye"></i>Review</button>
+
+<div class="sheet" id="review" hidden role="dialog" aria-modal="true" aria-labelledby="rvTitle">
+<div class="scrim" data-close></div>
+<div class="panel">
+<div class="panel-h"><h2 id="rvTitle"><i class="ic" data-i="clipboard"></i>Review booking</h2><button type="button" class="iconbtn" data-close aria-label="Close"><i class="ic" data-i="x"></i></button></div>
+<div class="panel-b" id="rvBody"></div>
+<div class="floatbar">
+<button type="button" class="pillbtn icon" id="rvEdit" aria-label="Edit details"><i class="ic" data-i="edit"></i></button>
+<button type="button" class="pillbtn" id="rvCopy"><i class="ic" data-i="copy"></i>Copy</button>
+<button type="button" class="pillbtn wa" id="rvWa"><i class="ic" data-i="send"></i>Share to WhatsApp</button>
 </div>
+</div>
+</div>
+
+<div class="sheet" id="ccSheet" hidden role="dialog" aria-modal="true" aria-labelledby="ccTitle">
+<div class="scrim" data-close></div>
+<div class="panel">
+<div class="panel-h"><h2 id="ccTitle"><i class="ic" data-i="globe"></i>Select country</h2><button type="button" class="iconbtn" data-close aria-label="Close"><i class="ic" data-i="x"></i></button></div>
+<input type="search" class="cc-q" id="ccQ" placeholder="Search country or code (e.g. India, +44)" autocomplete="off" autocapitalize="none" spellcheck="false">
+<div class="cc-list" id="ccList"></div>
+</div>
+</div>
+
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -153,7 +228,7 @@ var CHOICES={
   cat:["Deluxe Room","Executive Room with Balcony","Signature Room with Balcony","Deluxe Suite","Executive Suite with Balcony","Signature Suite with Balcony","Deluxe Studio","Executive Studio with Balcony","Signature Studio with Balcony","Standard","Superior","Premier"],
   meal:["EP","CP","MAP","AP"]
 };
-var P={
+var IC={
 bars:'<path d="M3 20h18M6 20v-8M12 20V5M18 20v-5"/>',
 user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>',
 users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.9 3.1-7 7-7s7 3.1 7 7M16 4.5a3.5 3.5 0 0 1 0 7M18 13.5c2.4.9 4 3.1 4 6.5"/>',
@@ -204,10 +279,14 @@ bell:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/>',
 send:'<path d="M21 3 3 10.5l7 3 3 7.5z"/>',
 sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
 share:'<path d="M12 15V3M8 7l4-4 4 4M5 12v8h14v-8"/>',
+eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+edit:'<path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/>',
+x:'<path d="M6 6l12 12M18 6 6 18"/>',
+check:'<path d="m5 12 5 5 9-10"/>',
 sunrise:'<path d="M12 3v4M5 12H3M21 12h-2M6.3 6.3l1.4 1.4M17.7 6.3l-1.4 1.4M7 17a5 5 0 0 1 10 0M2 21h20"/>'
 };
 function ico(n){var i=document.createElement("i");i.className="ic";i.dataset.i=n;paint(i);return i}
-function paint(el){el.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+(P[el.dataset.i]||"")+'</svg>'}
+function paint(el){el.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+(IC[el.dataset.i]||"")+'</svg>'}
 [].forEach.call(document.querySelectorAll("[data-i]"),paint);
 
 var ICONS={
@@ -226,6 +305,12 @@ function iconFor(id,val){
 var LABELS={};
 // GST rule: 5% up to ₹7,500 per night, 18% above
 var GST_LIMIT=7500,gstFor=function(rate){return rate>GST_LIMIT?18:5};
+// All amounts are in Indian Rupees (₹)
+function calc(){
+  var n=nights(),rate=+$("rate").value||0,gst=gstFor(rate),adv=+$("adv").value||0;
+  var total=Math.round(rate*n*(1+gst/100)*100)/100;
+  return {n:n,rate:rate,gst:gst,adv:adv,total:total,pend:Math.max(total-adv,0)};
+}
 
 var inr=function(n){return "₹"+Number(n).toLocaleString("en-IN",{maximumFractionDigits:2})};
 var fmtDate=function(v){if(!v)return "";var p=v.split("-");var m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];return p[2]+" "+m[+p[1]-1]+" "+p[0]};
@@ -366,9 +451,8 @@ $("paxNext").addEventListener("click",function(){advance($("f-pax"))});
 
 /* ---------- message ---------- */
 function build(){
-  var n=nights(),rate=+$("rate").value||0,gst=gstFor(rate),adv=+$("adv").value||0;
+  var k=calc(),n=k.n,rate=k.rate,gst=k.gst,adv=k.adv,total=k.total,pend=k.pend;
   $("gst").value=gst;$("cGst").textContent=gst+"%";
-  var total=Math.round(rate*n*(1+gst/100)*100)/100,pend=Math.max(total-adv,0);
   $("cNights").textContent=n?n+" Night"+(n>1?"s":""):"–";
   $("cTotal").textContent=n&&rate?inr(total):"–";
   $("cPend").textContent=n&&rate?inr(pend):"–";
@@ -388,7 +472,7 @@ function build(){
 "Pending Amount: "+(n&&rate?inr(pend)+"/-":"")+"\n\n"+
 "*Guest Details:*\n"+
 "Email ID: "+v("email")+"\n"+
-"Phone: "+v("phone")+"\n\n"+
+"Phone: "+phoneFull()+"\n\n"+
 "*Property Details:*\n"+
 "Hotel/Property: "+v("prop")+"\n"+
 "Category: "+v("cat")+"\n"+
@@ -416,54 +500,70 @@ function wrap(ctx,text,maxW){
   if(line)lines.push(line);
   return lines.length?lines:[""];
 }
+// Draws one of the line icons (same set as the UI) onto the canvas
+function drawIcon(ctx,name,x,y,size,color){
+  var d=IC[name];if(!d)return;
+  ctx.save();ctx.translate(x,y);ctx.scale(size/24,size/24);
+  ctx.strokeStyle=color;ctx.lineWidth=2;ctx.lineCap="round";ctx.lineJoin="round";
+  var re=/<(path|circle|rect)\s([^>]*?)\/>/g,m;
+  while((m=re.exec(d))){
+    var a={};m[2].replace(/(\w+)="([^"]*)"/g,function(_,k,val){a[k]=val});
+    if(m[1]==="path")ctx.stroke(new Path2D(a.d));
+    else if(m[1]==="circle"){ctx.beginPath();ctx.arc(+a.cx,+a.cy,+a.r,0,7);ctx.stroke()}
+    else{var q=new Path2D();if(q.roundRect)q.roundRect(+a.x,+a.y,+a.width,+a.height,+(a.rx||0));else q.rect(+a.x,+a.y,+a.width,+a.height);ctx.stroke(q)}
+  }
+  ctx.restore();
+}
 function drawCard(){
-  var n=nights(),rate=+$("rate").value||0,gst=gstFor(rate),adv=+$("adv").value||0;
-  var total=Math.round(rate*n*(1+gst/100)*100)/100,pend=Math.max(total-adv,0);
-  var c=$("card"),ctx=c.getContext("2d"),W=1080,P=56,LX=P,VX=360,VW=W-P-VX,F='system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+  var k=calc(),n=k.n,rate=k.rate,gst=k.gst,adv=k.adv,total=k.total,pend=k.pend;
+  var c=$("card"),ctx=c.getContext("2d"),W=1080,PAD=56,VX=390,VW=W-PAD-VX,F='system-ui,-apple-system,"Segoe UI",Roboto,sans-serif',G="#1f7a4d";
   var nStr=n?n+" Night"+(n>1?"s":""):"";
+  // [label, value, icon] – icons for chosen options match the ones on the buttons
   var rows=[
-    ["Guest",v("guest")],["Booking No.",v("bno")],["Property",v("prop")],
-    ["Category",v("cat")],["Room No.",v("room")],
-    ["Check-in",fmtDate(v("cin"))],["Check-out",fmtDate(v("cout"))],["Stay",nStr],
-    ["PAX",v("pax")],["Meal Plan",v("meal")],["Salesperson",v("sales")],["Source",v("source")]
+    ["Guest",v("guest"),"user"],["Booking No.",v("bno"),"bookmark"],["Property",v("prop"),iconFor("prop",v("prop"))||"hotel"],
+    ["Category",v("cat"),iconFor("cat",v("cat"))||"bed"],["Room No.",v("room"),"door"],
+    ["Check-in",fmtDate(v("cin")),"login"],["Check-out",fmtDate(v("cout")),"logout"],["Stay",nStr,"moon"],
+    ["PAX",v("pax"),"users"],["Meal Plan",v("meal"),iconFor("meal",v("meal"))||"utensils"],
+    ["Salesperson",v("sales"),iconFor("sales",v("sales"))||"user"],["Source",v("source"),iconFor("source",v("source"))||"bars"]
   ].filter(function(r){return r[1]});
-  if(v("req"))rows.push(["Special Request",v("req")]);
+  if(v("req"))rows.push(["Special Request",v("req"),"note"]);
   var money=[
-    ["Per Day",rate?inr(rate)+" + "+gst+"% GST":""],
-    ["Total Tariff",n&&rate?inr(total)+"/-":""],
-    ["Advance ("+(v("pay")||"–")+")",inr(adv)+"/-"],
-    ["Pending",n&&rate?inr(pend)+"/-":""]
+    ["Per Day",rate?inr(rate)+" + "+gst+"% GST":"","rupee"],
+    ["Total Tariff",n&&rate?inr(total)+"/-":"","wallet"],
+    ["Advance ("+(v("pay")||"–")+")",inr(adv)+"/-",iconFor("pay",v("pay"))||"card"],
+    ["Pending",n&&rate?inr(pend)+"/-":"","clock"]
   ].filter(function(r){return r[1]});
-  // measure
   ctx.font="500 32px "+F;
-  var LH=44,lay=rows.map(function(r){var l=wrap(ctx,r[1],VW);return {k:r[0],lines:l,h:l.length*LH+26}});
+  var LH=44,lay=rows.map(function(r){var l=wrap(ctx,r[1],VW);return {k:r[0],ic:r[2],lines:l,h:l.length*LH+26}});
   var rowsH=lay.reduce(function(s,r){return s+r.h},0);
   var HEAD=170,MONEYH=money.length*58+50,H=HEAD+30+rowsH+30+MONEYH+60;
   c.height=H;ctx=c.getContext("2d");
   ctx.fillStyle="#ffffff";ctx.fillRect(0,0,W,H);
-  ctx.fillStyle="#1f7a4d";ctx.fillRect(0,0,W,HEAD);
+  ctx.fillStyle=G;ctx.fillRect(0,0,W,HEAD);
   ctx.fillStyle="#ffffff";ctx.textBaseline="alphabetic";
-  ctx.font="800 50px "+F;ctx.fillText("New Booking Confirmed",P,80);
+  ctx.font="800 50px "+F;ctx.fillText("New Booking Confirmed",PAD,80);
   ctx.font="500 30px "+F;ctx.globalAlpha=.9;
-  ctx.fillText(v("bno")?"Booking No. "+v("bno"):"Booking details",P,128);ctx.globalAlpha=1;
+  ctx.fillText(v("bno")?"Booking No. "+v("bno"):"Booking details",PAD,128);ctx.globalAlpha=1;
   var y=HEAD+30;
-  lay.forEach(function(r,i){
-    ctx.fillStyle="#66706a";ctx.font="600 25px "+F;ctx.fillText(r.k.toUpperCase(),LX,y+34);
+  lay.forEach(function(r){
+    drawIcon(ctx,r.ic,PAD,y+4,38,G);
+    ctx.fillStyle="#66706a";ctx.font="600 24px "+F;ctx.fillText(r.k.toUpperCase(),PAD+56,y+34);
     ctx.fillStyle="#1d2420";ctx.font="500 32px "+F;
     r.lines.forEach(function(l,j){ctx.fillText(l,VX,y+34+j*LH)});
     y+=r.h;
-    ctx.fillStyle="#e4e8e4";ctx.fillRect(P,y-8,W-2*P,2);
+    ctx.fillStyle="#e4e8e4";ctx.fillRect(PAD,y-8,W-2*PAD,2);
   });
   y+=22;
   ctx.fillStyle="#eef6f0";
   ctx.beginPath();
-  if(ctx.roundRect)ctx.roundRect(P,y,W-2*P,MONEYH,24);else ctx.rect(P,y,W-2*P,MONEYH);
+  if(ctx.roundRect)ctx.roundRect(PAD,y,W-2*PAD,MONEYH,24);else ctx.rect(PAD,y,W-2*PAD,MONEYH);
   ctx.fill();
   money.forEach(function(r,i){
     var last=r[0]==="Pending",yy=y+54+i*58;
-    ctx.fillStyle="#66706a";ctx.font="500 28px "+F;ctx.textAlign="left";ctx.fillText(r[0],P+30,yy);
+    drawIcon(ctx,r[2],PAD+30,yy-27,36,last?"#b3261e":G);
+    ctx.fillStyle="#66706a";ctx.font="500 28px "+F;ctx.textAlign="left";ctx.fillText(r[0],PAD+84,yy);
     ctx.fillStyle=last?"#b3261e":"#1d2420";ctx.font=(last||r[0]==="Total Tariff"?"800 34px ":"600 30px ")+F;ctx.textAlign="right";
-    ctx.fillText(r[1],W-P-30,yy);
+    ctx.fillText(r[1],W-PAD-30,yy);
   });
   ctx.textAlign="left";
 }
@@ -499,22 +599,13 @@ function copyText(t){
   }
   return Promise.resolve(fallback());
 }
-$("copy").addEventListener("click",function(){
+function doCopy(){
   copyText($("out").value).then(function(ok){
     if(ok)toast("Message copied ✓");
-    else{var o=$("out");o.focus();o.select();toast("Select-all done – tap Copy in the menu",3500)}
+    else{closeSheet();var o=$("out");o.focus();o.select();toast("Select-all done – tap Copy in the menu",3500)}
   });
-});
-
-$("copyTxt").addEventListener("click",function(){
-  copyText($("out").value).then(function(ok){
-    if(ok)toast("Text copied ✓");
-    else{var o=$("out");o.focus();o.select();toast("Select-all done – tap Copy in the menu",3500)}
-  });
-});
-
-/* ---------- WhatsApp share (image + text) ---------- */
-$("wa").addEventListener("click",function(){
+}
+function doShare(){
   var t=$("out").value,wantImg=$("withImg").checked;
   var textOnly=function(){window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank","noopener")};
   if(!wantImg){textOnly();return}
@@ -531,11 +622,13 @@ $("wa").addEventListener("click",function(){
     document.body.appendChild(a);a.click();a.remove();
     toast("Image saved – attach it in WhatsApp",3500);
   }
-});
+}
+["copy","copyTxt","rvCopy"].forEach(function(i){$(i).addEventListener("click",doCopy)});
+["wa","rvWa"].forEach(function(i){$(i).addEventListener("click",doShare)});
 
 $("reset").addEventListener("click",function(){
   ["bno","guest","cin","cout","rate","email","phone","room","req"].forEach(function(i){$(i).value=""});
-  $("adv").value=0;syncDates();pax.adults=1;pax.infants=0;paxRender();build();
+  $("adv").value=0;resetContact();syncDates();pax.adults=1;pax.infants=0;paxRender();build();
   setActive(fields[0]);window.scrollTo({top:0,behavior:"smooth"});
 });
 
@@ -566,6 +659,173 @@ function applyParams(){
   var first=fields.filter(function(f){return !done[f.id.slice(2)]})[0];
   if(Object.keys(done).length&&first){setActive(first);setTimeout(function(){first.scrollIntoView({block:"start"})},50)}
 }
+
+/* ---------- sheets (review + country picker) ---------- */
+var openName=null;
+function openSheet(id){
+  $(id).hidden=false;openName=id;document.documentElement.classList.add("noscroll");
+  try{history.pushState({sheet:id},"")}catch(e){}
+}
+function hideSheet(){if(!openName)return;$(openName).hidden=true;openName=null;document.documentElement.classList.remove("noscroll")}
+function closeSheet(){
+  if(!openName)return;hideSheet();
+  try{if(history.state&&history.state.sheet)history.back()}catch(e){}
+}
+window.addEventListener("popstate",hideSheet);                       // phone back button closes the sheet
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeSheet()});
+[].forEach.call(document.querySelectorAll("[data-close]"),function(b){b.addEventListener("click",closeSheet)});
+
+/* ---------- country code picker (data: github.com/datasets/country-codes) ---------- */
+var COUNTRIES=[["Afghanistan","AF","+93"],["Albania","AL","+355"],["Algeria","DZ","+213"],["American Samoa","AS","+1684"],["Andorra","AD","+376"],["Angola","AO","+244"],["Anguilla","AI","+1264"],["Antarctica","AQ","+672"],["Antigua & Barbuda","AG","+1268","Antigua and Barbuda"],["Argentina","AR","+54"],["Armenia","AM","+374"],["Aruba","AW","+297"],["Australia","AU","+61"],["Austria","AT","+43"],["Azerbaijan","AZ","+994"],["Bahamas","BS","+1242"],["Bahrain","BH","+973"],["Bangladesh","BD","+880"],["Barbados","BB","+1246"],["Belarus","BY","+375"],["Belgium","BE","+32"],["Belize","BZ","+501"],["Benin","BJ","+229"],["Bermuda","BM","+1441"],["Bhutan","BT","+975"],["Bolivia","BO","+591","Bolivia (Plurinational State of)"],["Bosnia","BA","+387","Bosnia and Herzegovina"],["Botswana","BW","+267"],["Bouvet Island","BV","+47"],["Brazil","BR","+55"],["British Indian Ocean Territory","IO","+246"],["British Virgin Islands","VG","+1284"],["Brunei","BN","+673","Brunei Darussalam"],["Bulgaria","BG","+359"],["Burkina Faso","BF","+226"],["Burundi","BI","+257"],["Cambodia","KH","+855"],["Cameroon","CM","+237"],["Canada","CA","+1"],["Cape Verde","CV","+238","Cabo Verde"],["Caribbean Netherlands","BQ","+599","Bonaire, Sint Eustatius and Saba"],["Cayman Islands","KY","+1345"],["Central African Republic","CF","+236"],["Chad","TD","+235"],["Chile","CL","+56"],["China","CN","+86"],["Christmas Island","CX","+61"],["Cocos Islands","CC","+61","Cocos (Keeling) Islands"],["Colombia","CO","+57"],["Comoros","KM","+269"],["Congo - Brazzaville","CG","+242","Congo"],["Congo - Kinshasa","CD","+243","Democratic Republic of the Congo"],["Cook Islands","CK","+682"],["Costa Rica","CR","+506"],["Croatia","HR","+385"],["Cuba","CU","+53"],["Curaçao","CW","+599"],["Cyprus","CY","+357"],["Czechia","CZ","+420"],["Côte d’Ivoire","CI","+225","Ivory Coast"],["Denmark","DK","+45"],["Djibouti","DJ","+253"],["Dominica","DM","+1767"],["Dominican Republic","DO","+1809"],["Ecuador","EC","+593"],["Egypt","EG","+20"],["El Salvador","SV","+503"],["Equatorial Guinea","GQ","+240"],["Eritrea","ER","+291"],["Estonia","EE","+372"],["Eswatini","SZ","+268"],["Ethiopia","ET","+251"],["Falkland Islands","FK","+500"],["Faroe Islands","FO","+298"],["Fiji","FJ","+679"],["Finland","FI","+358"],["France","FR","+33"],["French Guiana","GF","+594"],["French Polynesia","PF","+689"],["French Southern Territories","TF","+262"],["Gabon","GA","+241"],["Gambia","GM","+220"],["Georgia","GE","+995"],["Germany","DE","+49"],["Ghana","GH","+233"],["Gibraltar","GI","+350"],["Greece","GR","+30"],["Greenland","GL","+299"],["Grenada","GD","+1473"],["Guadeloupe","GP","+590"],["Guam","GU","+1671"],["Guatemala","GT","+502"],["Guernsey","GG","+44"],["Guinea","GN","+224"],["Guinea-Bissau","GW","+245"],["Guyana","GY","+592"],["Haiti","HT","+509"],["Heard & McDonald Islands","HM","+672","Heard Island and McDonald Islands"],["Honduras","HN","+504"],["Hong Kong","HK","+852","China, Hong Kong Special Administrative Region"],["Hungary","HU","+36"],["Iceland","IS","+354"],["India","IN","+91"],["Indonesia","ID","+62"],["Iran","IR","+98","Iran (Islamic Republic of)"],["Iraq","IQ","+964"],["Ireland","IE","+353"],["Isle of Man","IM","+44"],["Israel","IL","+972"],["Italy","IT","+39"],["Jamaica","JM","+1876"],["Japan","JP","+81"],["Jersey","JE","+44"],["Jordan","JO","+962"],["Kazakhstan","KZ","+7"],["Kenya","KE","+254"],["Kiribati","KI","+686"],["Kuwait","KW","+965"],["Kyrgyzstan","KG","+996"],["Laos","LA","+856","Lao People's Democratic Republic"],["Latvia","LV","+371"],["Lebanon","LB","+961"],["Lesotho","LS","+266"],["Liberia","LR","+231"],["Libya","LY","+218"],["Liechtenstein","LI","+423"],["Lithuania","LT","+370"],["Luxembourg","LU","+352"],["Macao","MO","+853","China, Macao Special Administrative Region"],["Madagascar","MG","+261"],["Malawi","MW","+265"],["Malaysia","MY","+60"],["Maldives","MV","+960"],["Mali","ML","+223"],["Malta","MT","+356"],["Marshall Islands","MH","+692"],["Martinique","MQ","+596"],["Mauritania","MR","+222"],["Mauritius","MU","+230"],["Mayotte","YT","+262"],["Mexico","MX","+52"],["Micronesia","FM","+691","Micronesia (Federated States of)"],["Moldova","MD","+373","Republic of Moldova"],["Monaco","MC","+377"],["Mongolia","MN","+976"],["Montenegro","ME","+382"],["Montserrat","MS","+1664"],["Morocco","MA","+212"],["Mozambique","MZ","+258"],["Myanmar","MM","+95"],["Namibia","NA","+264"],["Nauru","NR","+674"],["Nepal","NP","+977"],["Netherlands","NL","+31"],["New Caledonia","NC","+687"],["New Zealand","NZ","+64"],["Nicaragua","NI","+505"],["Niger","NE","+227"],["Nigeria","NG","+234"],["Niue","NU","+683"],["Norfolk Island","NF","+672"],["North Korea","KP","+850","Democratic People's Republic of Korea"],["North Macedonia","MK","+389"],["Northern Mariana Islands","MP","+1670"],["Norway","NO","+47"],["Oman","OM","+968"],["Pakistan","PK","+92"],["Palau","PW","+680"],["Palestine","PS","+970","State of Palestine"],["Panama","PA","+507"],["Papua New Guinea","PG","+675"],["Paraguay","PY","+595"],["Peru","PE","+51"],["Philippines","PH","+63"],["Pitcairn","PN","+870"],["Poland","PL","+48"],["Portugal","PT","+351"],["Puerto Rico","PR","+1"],["Qatar","QA","+974"],["Romania","RO","+40"],["Russia","RU","+7","Russian Federation"],["Rwanda","RW","+250"],["Réunion","RE","+262"],["Samoa","WS","+685"],["San Marino","SM","+378"],["Saudi Arabia","SA","+966"],["Senegal","SN","+221"],["Serbia","RS","+381p"],["Seychelles","SC","+248"],["Sierra Leone","SL","+232"],["Singapore","SG","+65"],["Sint Maarten","SX","+1721","Sint Maarten (Dutch part)"],["Slovakia","SK","+421"],["Slovenia","SI","+386"],["Solomon Islands","SB","+677"],["Somalia","SO","+252"],["South Africa","ZA","+27"],["South Georgia & South Sandwich Islands","GS","+500","South Georgia and the South Sandwich Islands"],["South Korea","KR","+82","Republic of Korea"],["South Sudan","SS","+211"],["Spain","ES","+34"],["Sri Lanka","LK","+94"],["St. Barthélemy","BL","+590","Saint Barthélemy"],["St. Helena","SH","+290n","Saint Helena"],["St. Kitts & Nevis","KN","+1869","Saint Kitts and Nevis"],["St. Lucia","LC","+1758","Saint Lucia"],["St. Martin","MF","+590","Saint Martin (French Part)"],["St. Pierre & Miquelon","PM","+508","Saint Pierre and Miquelon"],["St. Vincent & Grenadines","VC","+1784","Saint Vincent and the Grenadines"],["Sudan","SD","+249"],["Suriname","SR","+597"],["Svalbard & Jan Mayen","SJ","+47","Svalbard and Jan Mayen Islands"],["Sweden","SE","+46"],["Switzerland","CH","+41"],["Syria","SY","+963","Syrian Arab Republic"],["São Tomé & Príncipe","ST","+239","Sao Tome and Principe"],["Taiwan","TW","+886"],["Tajikistan","TJ","+992"],["Tanzania","TZ","+255","United Republic of Tanzania"],["Thailand","TH","+66"],["Timor-Leste","TL","+670"],["Togo","TG","+228"],["Tokelau","TK","+690"],["Tonga","TO","+676"],["Trinidad & Tobago","TT","+1868","Trinidad and Tobago"],["Tunisia","TN","+216"],["Turkmenistan","TM","+993"],["Turks & Caicos Islands","TC","+1649","Turks and Caicos Islands"],["Tuvalu","TV","+688"],["Türkiye","TR","+90"],["U.S. Virgin Islands","VI","+1340","United States Virgin Islands"],["Uganda","UG","+256"],["UK","GB","+44","United Kingdom of Great Britain and Northern Ireland"],["Ukraine","UA","+380"],["United Arab Emirates","AE","+971"],["Uruguay","UY","+598"],["US","US","+1","United States of America"],["Uzbekistan","UZ","+998"],["Vanuatu","VU","+678"],["Vatican City","VA","+3906","Holy See"],["Venezuela","VE","+58","Venezuela (Bolivarian Republic of)"],["Vietnam","VN","+84","Viet Nam"],["Wallis & Futuna","WF","+681","Wallis and Futuna Islands"],["Western Sahara","EH","+212"],["Yemen","YE","+967"],["Zambia","ZM","+260"],["Zimbabwe","ZW","+263"],["Åland Islands","AX","+358"]];
+var cc={name:"India",iso:"IN",dial:"+91"};
+function phoneFull(){var p=v("phone");return p?cc.dial+" "+p:""}
+function phoneHint(){var p=v("phone");$("phoneHint").textContent=(cc.iso==="IN"&&p&&p.length!==10)?"Indian mobile numbers have 10 digits":""}
+function setCountry(c){
+  cc={name:c[0],iso:c[1],dial:c[2]};
+  $("ccDial").textContent=cc.dial;$("ccName").textContent=cc.name+" ("+cc.dial+")";
+  var ph=$("phone");ph.maxLength=cc.iso==="IN"?10:15;ph.value=ph.value.slice(0,ph.maxLength);
+  phoneHint();build();
+}
+function renderCC(q){
+  q=q.trim().toLowerCase();var list=$("ccList");list.textContent="";
+  var digits=/^\+?\d+$/.test(q)?q.replace("+",""):null;
+  var items=COUNTRIES.filter(function(c){
+    if(!q)return true;
+    if(digits!==null)return c[2].slice(1).indexOf(digits)===0;
+    return c[0].toLowerCase().indexOf(q)>-1||c[1].toLowerCase()===q||(c[3]&&c[3].toLowerCase().indexOf(q)>-1);
+  });
+  // best matches first: exact code / ISO, then names starting with the text, then the rest
+  var score=function(c){
+    var nm=c[0].toLowerCase();
+    if(!q)return c[1]==="IN"?0:1;                                        // India first when nothing typed
+    if(digits!==null)return c[2].slice(1)===digits?0:1;
+    if(c[1].toLowerCase()===q)return 0;
+    if(nm.indexOf(q)===0||(c[3]&&c[3].toLowerCase().indexOf(q)===0))return 1;
+    if(nm.split(/[\s(-]+/).some(function(w){return w.indexOf(q)===0}))return 2;
+    return nm.indexOf(q)>-1?3:4;
+  };
+  items.sort(function(a,b){return score(a)-score(b)||(a[0]<b[0]?-1:1)});
+  items.forEach(function(c){
+    var b=document.createElement("button");b.type="button";b.className="cc-row"+(c[1]===cc.iso?" sel":"");
+    var n=document.createElement("span");n.textContent=c[0];
+    var d=document.createElement("b");d.textContent=c[2];
+    b.appendChild(n);b.appendChild(d);
+    b.addEventListener("click",function(){setCountry(c);closeSheet();setTimeout(function(){$("phone").focus()},120)});
+    list.appendChild(b);
+  });
+  if(!items.length){var e=document.createElement("div");e.className="hint";e.textContent="No country found";list.appendChild(e)}
+}
+$("ccBtn").appendChild(ico("chevD"));
+$("ccBtn").addEventListener("click",function(){openSheet("ccSheet");$("ccQ").value="";renderCC("");setTimeout(function(){$("ccQ").focus()},60)});
+$("ccQ").addEventListener("input",function(){renderCC(this.value)});
+$("phone").addEventListener("input",function(){this.value=this.value.replace(/\D/g,"");phoneHint();build()});
+
+/* ---------- email: validation + suggestions ---------- */
+var DOMS=["gmail.com","yahoo.com","outlook.com","hotmail.com","icloud.com"];
+var TYPOS={"gmial.com":"gmail.com","gmai.com":"gmail.com","gamil.com":"gmail.com","gnail.com":"gmail.com","gmail.con":"gmail.com","gmail.cm":"gmail.com","gmail.co":"gmail.com","yaho.com":"yahoo.com","yahooo.com":"yahoo.com","hotmial.com":"hotmail.com","outlok.com":"outlook.com"};
+var validEmail=function(e){return /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9\-]+(\.[A-Za-z0-9\-]+)*\.[A-Za-z]{2,}$/.test(e)};
+function emailSuggest(val){
+  if(/\s/.test(val))return [];
+  var at=val.indexOf("@"),out=[];
+  if(at<0)out=DOMS.slice(0,3).map(function(d){return val+"@"+d});
+  else{
+    var local=val.slice(0,at),dom=val.slice(at+1).toLowerCase();
+    if(!local)return [];
+    if(!dom)out=DOMS.slice(0,4).map(function(d){return local+"@"+d});
+    else if(TYPOS[dom])out=[local+"@"+TYPOS[dom]];
+    else if(dom.indexOf(".")<0){
+      out=DOMS.filter(function(d){return d.indexOf(dom)===0}).map(function(d){return local+"@"+d});
+      out.push(local+"@"+dom+".com");                                   // "john@acme" -> "john@acme.com"
+    }else if(/\.(c|co)$/.test(dom))out=[local+"@"+dom.replace(/\.co?$/,".com")];
+    else if(/\.$/.test(dom))out=[local+"@"+dom+"com"];
+  }
+  var seen={};
+  return out.filter(function(x){if(x===val||seen[x])return false;seen[x]=1;return true}).slice(0,4);
+}
+function renderSugg(){
+  var box=$("emailSugg");box.textContent="";
+  emailSuggest($("email").value.trim()).forEach(function(sg){
+    var b=document.createElement("button");b.type="button";b.className="chip";b.textContent=sg;
+    b.addEventListener("mousedown",function(e){e.preventDefault()});   // keep focus so blur doesn't flash an error
+    b.addEventListener("click",function(){$("email").value=sg;renderSugg();emailState(true);build();advance($("f-email"))});
+    box.appendChild(b);
+  });
+}
+function emailState(final){
+  var e=v("email"),h=$("emailHint"),inp=$("email");
+  if(!e){h.textContent="";h.className="hint";inp.removeAttribute("aria-invalid");return}
+  if(validEmail(e)){h.textContent="✓ Valid email";h.className="hint ok";inp.removeAttribute("aria-invalid")}
+  else if(final){h.textContent="Enter a valid email, e.g. name@gmail.com";h.className="hint bad";inp.setAttribute("aria-invalid","true")}
+  else{h.textContent="";h.className="hint";inp.removeAttribute("aria-invalid")}
+}
+$("email").addEventListener("input",function(){renderSugg();emailState(false)});
+$("email").addEventListener("blur",function(){$("email").value=$("email").value.trim();emailState(true)});
+function resetContact(){setCountry(COUNTRIES.filter(function(c){return c[1]==="IN"})[0]);renderSugg();emailState(false);$("phoneHint").textContent=""}
+
+/* ---------- review popover ---------- */
+function rvRow(icon,label,val,fid,bad){
+  var r=document.createElement("button");r.type="button";r.className="rv-row";
+  r.appendChild(ico(icon));
+  var w=document.createElement("div");
+  var k=document.createElement("div");k.className="rv-k";k.textContent=label;
+  var x=document.createElement("div");x.className="rv-v"+(val?"":" empty")+(bad?" bad":"");x.textContent=val||"Not filled";
+  w.appendChild(k);w.appendChild(x);r.appendChild(w);
+  r.addEventListener("click",function(){            // tap a row to jump back and edit it
+    closeSheet();
+    setTimeout(function(){var f=$(fid);if(f){setActive(f);f.scrollIntoView({block:"start"})}},60);
+  });
+  return r;
+}
+function fillReview(){
+  var k=calc(),body=$("rvBody"),em=v("email"),emBad=!!em&&!validEmail(em);
+  var G=[
+   ["Booking","clipboard",[
+     ["source","Market Source",v("source"),"f-source"],["sales","Salesperson",v("sales"),"f-sales"],
+     ["bookmark","Booking No.",v("bno"),"f-bno"],["user","Guest Name",v("guest"),"f-guest"],
+     ["login","Check-in",fmtDate(v("cin")),"f-cin"],["logout","Check-out",fmtDate(v("cout")),"f-cout"],
+     ["moon","Total Nights",k.n?k.n+" Night"+(k.n>1?"s":""):"","f-cout"]]],
+   ["Tariff & Payment","wallet",[
+     ["rupee","Per Day Tariff",k.rate?inr(k.rate)+" + "+k.gst+"% GST":"","f-rate"],
+     ["wallet","Total Tariff",k.n&&k.rate?inr(k.total)+"/-":"","f-rate"],
+     ["wallet","Advance Received",inr(k.adv)+"/-","f-adv"],
+     ["pay","Payment Mode",v("pay"),"f-pay"],
+     ["clock","Pending Amount",k.n&&k.rate?inr(k.pend)+"/-":"","f-adv"]]],
+   ["Guest","user",[
+     ["mail","Email ID",em,"f-email",emBad],["phone","Phone",phoneFull(),"f-phone"]]],
+   ["Property","hotel",[
+     ["prop","Hotel / Property",v("prop"),"f-prop"],["cat","Category",v("cat"),"f-cat"],
+     ["door","Room No.",v("room"),"f-room"],["users","PAX",v("pax"),"f-pax"],["meal","Meal Plan",v("meal"),"f-meal"]]],
+   ["Special Request","note",[["note","Special Request",v("req"),"f-req"]]]
+  ];
+  body.textContent="";
+  var missing=0,frag=document.createDocumentFragment();
+  G.forEach(function(g){
+    var h=document.createElement("div");h.className="rv-h";h.appendChild(ico(g[1]));h.appendChild(document.createTextNode(g[0]));frag.appendChild(h);
+    g[2].forEach(function(r){
+      var icon=r[0];                                   // option rows reuse the icon of the chosen value
+      if(["source","sales","pay","prop","cat","meal"].indexOf(icon)>-1)icon=iconFor(icon,r[2])||({source:"bars",sales:"user",pay:"card",prop:"hotel",cat:"bed",meal:"utensils"})[icon];
+      if(!r[2]&&r[1]!=="Special Request")missing++;
+      frag.appendChild(rvRow(icon,r[1],r[2],r[3],r[4]));
+    });
+  });
+  var note=document.createElement("div");note.className="rv-note";
+  note.textContent=(missing?missing+" field"+(missing>1?"s":"")+" not filled yet – tap a row to edit it.":"All details filled ✓")+(emBad?" The email address looks invalid.":"");
+  body.appendChild(note);body.appendChild(frag);
+  body.scrollTop=0;
+}
+$("reviewPill").addEventListener("click",function(){build();fillReview();openSheet("review")});
+$("rvEdit").addEventListener("click",closeSheet);
+
+/* ---------- light / dark theme ---------- */
+function setTheme(t,save){
+  document.documentElement.setAttribute("data-theme",t);
+  var b=$("theme");b.textContent="";b.appendChild(ico(t==="dark"?"sun":"moon"));
+  b.setAttribute("aria-label",t==="dark"?"Switch to light mode":"Switch to dark mode");
+  if(save){try{localStorage.setItem("theme",t)}catch(e){}}
+}
+var curTheme=document.documentElement.getAttribute("data-theme")||(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+setTheme(curTheme,false);
+$("theme").addEventListener("click",function(){curTheme=curTheme==="dark"?"light":"dark";setTheme(curTheme,true)});
 
 paxRender();build();applyParams();
 
