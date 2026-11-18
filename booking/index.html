@@ -36,7 +36,7 @@ input:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px}
 .chip,.act,.next,.prevhead button{display:inline-flex;align-items:center;justify-content:center}
 .chips.wide .chip{justify-content:flex-start}
 .tog .ic{margin-right:0}
-.chips+input{margin-top:10px}
+.chips+input,.chips+textarea,.money+.chips{margin-top:10px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{flex:0 0 auto;min-height:44px;padding:9px 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--text);font:500 15px/1.2 inherit;cursor:pointer;touch-action:manipulation;transition:transform .08s}
 .chip:active{transform:scale(.96)}
@@ -177,7 +177,7 @@ html.guided .field{scroll-margin-top:12px}
 </head>
 <body>
 <div class="wrap">
-<div class="top"><h1><i class="ic" data-i="bell"></i>Olive Group – Booking Confirmation</h1><div class="tbtns"><button type="button" class="iconbtn" id="viewBtn"></button><button type="button" class="iconbtn" id="theme"></button></div></div>
+<div class="top"><h1><i class="ic" data-i="hotel"></i>Olive Group – Booking Confirmation</h1><div class="tbtns"><button type="button" class="iconbtn" id="viewBtn"></button><button type="button" class="iconbtn" id="theme"></button></div></div>
 <div class="install" id="install" hidden><i class="ic" data-i="mobile"></i><span id="installTxt"></span><button type="button" class="chip" id="installBtn" hidden>Install</button><button type="button" class="x" id="installX" aria-label="Dismiss">×</button></div>
 
 <div class="card">
@@ -193,7 +193,7 @@ html.guided .field{scroll-margin-top:12px}
 <div class="card">
 <div class="sec-h"><i class="ic" data-i="wallet"></i>Tariff &amp; Payment</div>
 <div class="field" id="f-rate"><label for="rate"><i class="ic" data-i="rupee"></i>Per Day Tariff (before GST)</label><div class="money"><span>₹</span><input type="number" id="rate" inputmode="decimal" placeholder="0" enterkeyhint="next"></div><input type="hidden" id="gst" value="5"></div>
-<div class="field" id="f-adv"><label for="adv"><i class="ic" data-i="wallet"></i>Advance Received</label><div class="money"><span>₹</span><input type="number" id="adv" value="0" inputmode="decimal" enterkeyhint="next"></div></div>
+<div class="field" id="f-adv"><label for="adv"><i class="ic" data-i="wallet"></i>Advance Received</label><div class="money"><span>₹</span><input type="number" id="adv" inputmode="decimal" placeholder="0" enterkeyhint="next"></div><div class="chips qa" id="advChips"></div></div>
 <div class="field" id="f-pay"><label><i class="ic" data-i="card"></i>Payment Mode</label><div class="chips" data-chips="pay"></div><input type="hidden" id="pay"></div>
 <div class="calc">
 <div class="pill"><span class="ic" data-i="moon"></span>Nights<b id="cNights">–</b></div>
@@ -214,7 +214,7 @@ html.guided .field{scroll-margin-top:12px}
 <div class="step"><div><b><i class="ic" data-i="baby"></i>Infants</b><small>Under 2</small></div><div class="ctr"><button type="button" data-pax="infants" data-d="-1" aria-label="Fewer infants">−</button><output id="nInfants">0</output><button type="button" data-pax="infants" data-d="1" aria-label="More infants">+</button></div></div>
 <input type="hidden" id="pax" value="1 Adult"><button type="button" class="next" id="paxNext">Next<i class="ic" style="margin:0 0 0 .3em" data-i="down"></i></button></div>
 <div class="field" id="f-meal"><label><i class="ic" data-i="utensils"></i>Meal Plan</label><div class="chips" data-chips="meal"></div><input type="hidden" id="meal" value="EP"></div>
-<div class="field" id="f-req"><label for="req"><i class="ic" data-i="note"></i>Special Request</label><textarea id="req" rows="2"></textarea></div>
+<div class="field" id="f-req"><label for="req"><i class="ic" data-i="note"></i>Special Request</label><div class="chips qa" id="reqChips"></div><textarea id="req" rows="2"></textarea></div>
 </div>
 
 <div class="card" style="padding-bottom:14px">
@@ -386,13 +386,13 @@ function goTo(i,noFocus){
   n.scrollIntoView({behavior:"smooth",block:"start"});
   // focus plain text fields only (not ones that offer chips, not date pickers)
   var inp=n.querySelector("input:not([type=hidden]):not([type=date]),textarea");
-  if(inp&&!n.querySelector(".chips")){if(!noFocus)setTimeout(function(){if(n.classList.contains("active")){try{inp.focus({preventScroll:true})}catch(e){}}},400)}   // skipped if the user already moved on
+  if(inp&&!n.querySelector(".chips:not(.qa)")){if(!noFocus)setTimeout(function(){if(n.classList.contains("active")){try{inp.focus({preventScroll:true})}catch(e){}}},400)}   // skipped if the user already moved on
   else if(!noFocus&&document.activeElement&&document.activeElement.blur)document.activeElement.blur();   // drop the keyboard so the options are visible
 }
 function advance(f){goTo(fields.indexOf(f)+1)}
 function pick(id,val){
   var box=document.querySelector('[data-chips="'+id+'"]');
-  $(id).value=val;box.classList.remove("open");
+  $(id).value=val;box.classList.remove("open");if(id==="sales")saveSales(val);
   syncChips(id);build();advance($("f-"+id));
 }
 function syncChips(id){
@@ -490,6 +490,38 @@ function dateChange(id,go){cinBox.classList.remove("open");coutBox.classList.rem
 addMore(cinBox);addMore(coutBox);
 syncDates();
 
+/* ---------- quick chips: advance 25/50/100% of total, "No special requests" ---------- */
+var advBox=$("advChips"),reqBox=$("reqChips"),NOREQ="No special requests";
+var advAmt=function(t,p){return Math.round(t*p)/100};
+var advBtns=[25,50,100].map(function(p){
+  var b=mkChip(advBox,p+"%",null,function(){
+    var t=calc().total;
+    if(!t){toast("Enter dates and tariff first");return}
+    $("adv").value=advAmt(t,p);build();advance($("f-adv"));
+  });
+  b.dataset.p=p;return b;
+});
+var noReq=mkChip(reqBox,NOREQ,"check",function(){
+  $("req").value=v("req")===NOREQ?"":NOREQ;build();
+});
+function quickSync(){
+  var t=calc().total,raw=$("adv").value,a=raw===""?null:+raw;
+  advBtns.forEach(function(b){
+    var p=+b.dataset.p;
+    b.textContent=p+"%"+(t?" · "+inr(advAmt(t,p)):"");
+    b.setAttribute("aria-checked",String(!!t&&a!==null&&a===advAmt(t,p)));
+  });
+  noReq.setAttribute("aria-checked",String(v("req")===NOREQ));
+}
+
+/* ---------- remember the salesperson on this device ---------- */
+function saveSales(val){try{if(val)localStorage.setItem("sales",val)}catch(e){}}
+(function(){
+  var s="";try{s=localStorage.getItem("sales")||""}catch(e){}
+  if(s){$("sales").value=s;syncChips("sales")}
+  $("sales").addEventListener("change",function(){saveSales(v("sales"))});
+})();
+
 /* ---------- PAX steppers ---------- */
 var pax={adults:1,infants:0};
 function paxRender(){
@@ -538,7 +570,7 @@ function build(){
 "Meal Plan: "+v("meal")+"\n\n"+
 "Special Request: "+v("req");
   $("out").value=msg;
-  queueCard();gSync();
+  quickSync();queueCard();gSync();
 }
 ids.forEach(function(i){$(i).addEventListener("input",build);$(i).addEventListener("change",build)});
 
@@ -685,7 +717,7 @@ function doShare(){
 
 $("reset").addEventListener("click",function(){
   ["bno","guest","cin","cout","rate","email","phone","room","req"].forEach(function(i){$(i).value=""});
-  $("adv").value=0;resetContact();syncDates();pax.adults=1;pax.infants=0;paxRender();build();
+  $("adv").value="";resetContact();syncDates();pax.adults=1;pax.infants=0;paxRender();build();
   setActive(fields[0]);window.scrollTo({top:0,behavior:"smooth"});
 });
 
@@ -866,8 +898,8 @@ $("rvEdit").addEventListener("click",closeSheet);
 
 /* ---------- guided view: floating mini panel with the options + < > buttons ---------- */
 var GHINT={bno:"Type the booking number in the field above",guest:"Type the guest's name in the field above",rate:"Enter the per-day tariff in the field above",
-  adv:"Enter the advance received in the field above",email:"Type the email in the field above (suggestions appear there)",phone:"Enter the mobile number in the field above",
-  room:"Type the room number in the field above",req:"Optional – type any special request, then tap ✓ to review"};
+  adv:"Or enter the advance in the field above",email:"Type the email in the field above (suggestions appear there)",phone:"Enter the mobile number in the field above",
+  room:"Type the room number in the field above",req:"Optional – or type a special request in the field above, then tap ✓ to review"};
 function fieldLabel(f){var l=f.querySelector("label");return l?l.textContent.replace(/\s*\(.*?\)\s*$/,"").trim():""}
 function gChip(label,icon,fn){
   var b=document.createElement("button");b.type="button";b.className="chip";b.setAttribute("role","radio");
@@ -894,9 +926,10 @@ function gRender(f){
     });
     body.appendChild(box);
     if(id==="sales"||id==="cat")hint="Or type it in the field above";
-  }else if(id==="cin"||id==="cout"){
+  }else if(id==="cin"||id==="cout"||id==="adv"||id==="req"){
+    var srcBox={cin:cinBox,cout:coutBox,adv:advBox,req:reqBox}[id];
     var db=document.createElement("div");db.className="chips";db.setAttribute("role","radiogroup");
-    [].forEach.call((id==="cin"?cinBox:coutBox).querySelectorAll(".chip:not(.more)"),function(src){
+    [].forEach.call(srcBox.querySelectorAll(".chip:not(.more)"),function(src){
       var c=document.createElement("button");c.type="button";c.className="chip";c.setAttribute("role","radio");
       c.innerHTML=src.innerHTML;c._src=src;c.addEventListener("click",function(){src.click()});db.appendChild(c);
     });
@@ -924,7 +957,7 @@ function gSync(){
   });
   if(!guided)return;
   [].forEach.call($("gBody").querySelectorAll(".chip"),function(c){
-    if(c._src)c.setAttribute("aria-checked",c._src.getAttribute("aria-checked")||"false");
+    if(c._src){if(c.innerHTML!==c._src.innerHTML)c.innerHTML=c._src.innerHTML;c.setAttribute("aria-checked",c._src.getAttribute("aria-checked")||"false")}
     else if(c.dataset.id)c.setAttribute("aria-checked",String(c.dataset.val===$(c.dataset.id).value.trim()));
   });
   if($("gp-adults")){
@@ -971,7 +1004,7 @@ setTheme(curTheme,false);
 $("theme").addEventListener("click",function(){curTheme=curTheme==="dark"?"light":"dark";setTheme(curTheme,true)});
 
 paxRender();build();applyParams();
-var savedView="form";try{savedView=localStorage.getItem("view")||"form"}catch(e){}
+var savedView="guided";try{savedView=localStorage.getItem("view")||"guided"}catch(e){}
 setView(savedView,false);
 
 /* ---------- install as an app (PWA) ---------- */
