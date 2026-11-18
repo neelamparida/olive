@@ -81,6 +81,7 @@ button.sec{background:transparent;color:var(--text);border:1px solid var(--line)
 .install .x{border:0;background:transparent;color:var(--muted);font-size:26px;line-height:1;width:40px;height:40px;cursor:pointer}
 .top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 14px}
 .top h1{margin:0}
+.tbtns{display:flex;gap:8px;flex:0 0 auto}
 .iconbtn{width:44px;height:44px;flex:0 0 auto;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
 .iconbtn .ic{margin:0;color:inherit}
 .endbtns{display:flex;gap:10px;margin-top:14px}
@@ -131,13 +132,52 @@ html.noscroll,html.noscroll body{overflow:hidden}
 .cc-row.sel{color:var(--accent);font-weight:700}
 .cc-row.sel b{color:var(--accent)}
 .cc-row .ic{margin:0 6px 0 0}
+
+/* ---------- view switch + guided panel ---------- */
+.gval{display:none}
+.gpanel{position:fixed;left:12px;right:12px;margin:0 auto;max-width:560px;bottom:calc(10px + env(safe-area-inset-bottom,0px) + var(--kb,0px));z-index:20;background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.35);overflow:hidden;animation:up .2s ease-out}
+.gpanel[hidden]{display:none}
+.g-bar{height:3px;background:var(--line)}
+.g-bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+.g-head{display:flex;align-items:center;gap:8px;padding:8px 8px 4px}
+.g-nav{width:46px;height:46px;flex:0 0 auto;border-radius:50%;border:1px solid var(--accent);background:var(--bg);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;touch-action:manipulation}
+.g-nav .ic{margin:0;color:inherit}
+.g-nav svg{width:1.6em;height:1.6em}
+.g-nav:active{background:var(--accent);color:var(--accent-text)}
+.g-nav:disabled{opacity:.3;border-color:var(--line);color:var(--muted)}
+.g-nav.go{background:var(--accent);color:var(--accent-text)}
+.g-title{flex:1;min-width:0;text-align:center}
+.g-step{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.g-label{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-label .ic{margin-right:.35em}
+.g-body{padding:6px 12px 12px;max-height:30vh;max-height:30dvh;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.g-body .chip{min-height:42px;padding:8px 13px;font-size:14px}
+.g-hint{font-size:13px;color:var(--muted);text-align:center;padding:4px 6px 2px}
+.g-hint b{color:var(--text)}
+.g-step2{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 2px}
+.g-step2+.g-step2{border-top:1px solid var(--line)}
+.g-step2 span{font-weight:600}
+.g-step2 .ctr button{width:42px;height:42px;font-size:24px}
+html.guided body{padding-bottom:calc(var(--gh,200px) + var(--kb,0px) + 30px + env(safe-area-inset-bottom,0px))}
+html.guided .fab{display:none}
+html.guided .field .chips{display:none}
+html.guided .field .gval{display:flex;align-items:center;min-height:46px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:16px;font-weight:600;cursor:pointer}
+html.guided .field .gval.empty{color:var(--muted);font-weight:400;font-style:italic}
+html.guided #paxNext{display:none}
+html.guided #toast{bottom:calc(var(--gh,160px) + var(--kb,0px) + 28px + env(safe-area-inset-bottom,0px))}
+html.guided .field{scroll-margin-top:12px}
+/* review image */
+.rv-img{display:block;width:100%;height:auto;margin:12px 0 0;border:1px solid var(--line);border-radius:12px;background:#fff}
+.rv-miss{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.rv-miss .chip{min-height:34px;padding:4px 12px;font-size:13px;border-color:var(--accent);color:var(--accent);background:transparent}
+.rv-more{margin-top:12px;border-top:1px solid var(--line)}
 @media(min-width:600px){.sheet{align-items:center}.panel{border-radius:20px}}
 @media(min-width:600px){.chip{min-height:40px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="top"><h1><i class="ic" data-i="bell"></i>Olive Group – Booking Confirmation</h1><button type="button" class="iconbtn" id="theme"></button></div>
+<div class="top"><h1><i class="ic" data-i="bell"></i>Olive Group – Booking Confirmation</h1><div class="tbtns"><button type="button" class="iconbtn" id="viewBtn"></button><button type="button" class="iconbtn" id="theme"></button></div></div>
 <div class="install" id="install" hidden><i class="ic" data-i="mobile"></i><span id="installTxt"></span><button type="button" class="chip" id="installBtn" hidden>Install</button><button type="button" class="x" id="installX" aria-label="Dismiss">×</button></div>
 
 <div class="card">
@@ -189,6 +229,16 @@ html.noscroll,html.noscroll body{overflow:hidden}
 <button class="act sec" id="reset"><i class="ic" data-i="plus"></i>New booking</button>
 <div class="note">WhatsApp opens your share sheet with the image and message; pick your group and send. If the message text doesn't appear as a caption, it is already on your clipboard – just paste it.</div>
 </div>
+</div>
+
+<div class="gpanel" id="gpanel" hidden role="region" aria-label="Guided entry">
+<div class="g-bar"><i id="gProg"></i></div>
+<div class="g-head">
+<button type="button" class="g-nav" id="gPrev" aria-label="Previous"><i class="ic" data-i="chevL"></i></button>
+<div class="g-title"><div class="g-step" id="gStep"></div><div class="g-label" id="gLabel"></div></div>
+<button type="button" class="g-nav" id="gNext" aria-label="Next"><i class="ic" data-i="chevR"></i></button>
+</div>
+<div class="g-body" id="gBody"></div>
 </div>
 
 <button type="button" class="fab" id="reviewPill"><i class="ic" data-i="eye"></i>Review</button>
@@ -273,6 +323,9 @@ plus:'<path d="M12 5v14M5 12h14"/>',
 image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m21 16-5-5L5 20"/>',
 chevD:'<path d="m6 9 6 6 6-6"/>',
 chevU:'<path d="m6 15 6-6 6 6"/>',
+panel:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 14h18M9 18h6"/>',
+chevL:'<path d="m15 6-6 6 6 6"/>',
+chevR:'<path d="m9 6 6 6-6 6"/>',
 down:'<path d="M12 5v14M6 13l6 6 6-6"/>',
 clipboard:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/>',
 bell:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/>',
@@ -324,15 +377,23 @@ function toast(msg,ms){var t=$("toast");t.textContent=msg;t.classList.add("show"
 
 /* ---------- chips + auto-advance ---------- */
 var fields=[].slice.call(document.querySelectorAll(".card > .field[id^='f-']"));
-function setActive(f){fields.forEach(function(x){x.classList.toggle("active",x===f)})}
-function advance(f){
-  var i=fields.indexOf(f),n=fields[i+1];
+var guided=false,gIdx=0;
+function setActive(f){fields.forEach(function(x){x.classList.toggle("active",x===f)});if(guided)gRender(f)}
+function goTo(i,noFocus){
+  var n=fields[i];
   if(!n)return;
   setActive(n);
   n.scrollIntoView({behavior:"smooth",block:"start"});
   // focus plain text fields only (not ones that offer chips, not date pickers)
   var inp=n.querySelector("input:not([type=hidden]):not([type=date]),textarea");
-  if(inp&&!n.querySelector(".chips")){setTimeout(function(){try{inp.focus({preventScroll:true})}catch(e){}},400)}
+  if(inp&&!n.querySelector(".chips")){if(!noFocus)setTimeout(function(){if(n.classList.contains("active")){try{inp.focus({preventScroll:true})}catch(e){}}},400)}   // skipped if the user already moved on
+  else if(!noFocus&&document.activeElement&&document.activeElement.blur)document.activeElement.blur();   // drop the keyboard so the options are visible
+}
+function advance(f){goTo(fields.indexOf(f)+1)}
+function pick(id,val){
+  var box=document.querySelector('[data-chips="'+id+'"]');
+  $(id).value=val;box.classList.remove("open");
+  syncChips(id);build();advance($("f-"+id));
 }
 function syncChips(id){
   var box=document.querySelector('[data-chips="'+id+'"]');if(!box)return;
@@ -368,12 +429,7 @@ Object.keys(CHOICES).forEach(function(id){
     var ic=iconFor(id,val);
     if(ic)b.appendChild(ico(ic));
     b.appendChild(document.createTextNode(LABELS[id]?LABELS[id](val):val));
-    b.addEventListener("click",function(){
-      $(id).value=val;
-      box.classList.remove("open");
-      syncChips(id);build();
-      advance($("f-"+id));
-    });
+    b.addEventListener("click",function(){pick(id,val)});
     box.appendChild(b);
   });
   addMore(box);
@@ -383,6 +439,7 @@ Object.keys(CHOICES).forEach(function(id){
 // Enter / "Next" on the keyboard moves on too
 fields.forEach(function(f){
   f.addEventListener("focusin",function(){setActive(f)});
+  f.addEventListener("click",function(e){if(guided&&!f.classList.contains("active")&&!e.target.closest(".chip"))setActive(f)});
   f.addEventListener("keydown",function(e){
     if(e.key==="Enter"&&e.target.tagName==="INPUT"){e.preventDefault();advance(f)}
   });
@@ -481,7 +538,7 @@ function build(){
 "Meal Plan: "+v("meal")+"\n\n"+
 "Special Request: "+v("req");
   $("out").value=msg;
-  queueCard();
+  queueCard();gSync();
 }
 ids.forEach(function(i){$(i).addEventListener("input",build);$(i).addEventListener("change",build)});
 
@@ -567,9 +624,9 @@ function drawCard(){
   });
   ctx.textAlign="left";
 }
+function cardDataUrl(){cancelAnimationFrame(cardQ);drawCard();return $("card").toDataURL("image/png")}   // always the latest values
 function cardFile(){
-  cancelAnimationFrame(cardQ);drawCard();   // always share the latest values
-  var d=$("card").toDataURL("image/png").split(",")[1],bin=atob(d),a=new Uint8Array(bin.length);
+  var d=cardDataUrl().split(",")[1],bin=atob(d),a=new Uint8Array(bin.length);
   for(var i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);
   var name="booking-"+(v("bno")||v("guest")||"confirmation").replace(/[^\w-]+/g,"_")+".png";
   return new File([a],name,{type:"image/png"});
@@ -762,7 +819,11 @@ $("email").addEventListener("input",function(){renderSugg();emailState(false)});
 $("email").addEventListener("blur",function(){$("email").value=$("email").value.trim();emailState(true)});
 function resetContact(){setCountry(COUNTRIES.filter(function(c){return c[1]==="IN"})[0]);renderSugg();emailState(false);$("phoneHint").textContent=""}
 
-/* ---------- review popover ---------- */
+/* ---------- review popover: shows the exact image that is shared to WhatsApp ---------- */
+function jumpTo(fid){                                // jump back to a field to edit it
+  closeSheet();
+  setTimeout(function(){var f=$(fid);if(f){setActive(f);f.scrollIntoView({block:"start"})}},60);
+}
 function rvRow(icon,label,val,fid,bad){
   var r=document.createElement("button");r.type="button";r.className="rv-row";
   r.appendChild(ico(icon));
@@ -770,51 +831,133 @@ function rvRow(icon,label,val,fid,bad){
   var k=document.createElement("div");k.className="rv-k";k.textContent=label;
   var x=document.createElement("div");x.className="rv-v"+(val?"":" empty")+(bad?" bad":"");x.textContent=val||"Not filled";
   w.appendChild(k);w.appendChild(x);r.appendChild(w);
-  r.addEventListener("click",function(){            // tap a row to jump back and edit it
-    closeSheet();
-    setTimeout(function(){var f=$(fid);if(f){setActive(f);f.scrollIntoView({block:"start"})}},60);
-  });
+  r.addEventListener("click",function(){jumpTo(fid)});
   return r;
 }
+var REQUIRED=[["source","Market Source","f-source"],["sales","Salesperson","f-sales"],["bno","Booking No.","f-bno"],["guest","Guest Name","f-guest"],
+  ["cin","Check-in","f-cin"],["cout","Check-out","f-cout"],["rate","Per Day Tariff","f-rate"],["pay","Payment Mode","f-pay"],
+  ["email","Email ID","f-email"],["phone","Phone","f-phone"],["prop","Property","f-prop"],["cat","Category","f-cat"],["room","Room No.","f-room"]];
 function fillReview(){
-  var k=calc(),body=$("rvBody"),em=v("email"),emBad=!!em&&!validEmail(em);
-  var G=[
-   ["Booking","clipboard",[
-     ["source","Market Source",v("source"),"f-source"],["sales","Salesperson",v("sales"),"f-sales"],
-     ["bookmark","Booking No.",v("bno"),"f-bno"],["user","Guest Name",v("guest"),"f-guest"],
-     ["login","Check-in",fmtDate(v("cin")),"f-cin"],["logout","Check-out",fmtDate(v("cout")),"f-cout"],
-     ["moon","Total Nights",k.n?k.n+" Night"+(k.n>1?"s":""):"","f-cout"]]],
-   ["Tariff & Payment","wallet",[
-     ["rupee","Per Day Tariff",k.rate?inr(k.rate)+" + "+k.gst+"% GST":"","f-rate"],
-     ["wallet","Total Tariff",k.n&&k.rate?inr(k.total)+"/-":"","f-rate"],
-     ["wallet","Advance Received",inr(k.adv)+"/-","f-adv"],
-     ["pay","Payment Mode",v("pay"),"f-pay"],
-     ["clock","Pending Amount",k.n&&k.rate?inr(k.pend)+"/-":"","f-adv"]]],
-   ["Guest","user",[
-     ["mail","Email ID",em,"f-email",emBad],["phone","Phone",phoneFull(),"f-phone"]]],
-   ["Property","hotel",[
-     ["prop","Hotel / Property",v("prop"),"f-prop"],["cat","Category",v("cat"),"f-cat"],
-     ["door","Room No.",v("room"),"f-room"],["users","PAX",v("pax"),"f-pax"],["meal","Meal Plan",v("meal"),"f-meal"]]],
-   ["Special Request","note",[["note","Special Request",v("req"),"f-req"]]]
-  ];
+  var body=$("rvBody"),em=v("email"),emBad=!!em&&!validEmail(em);
+  var miss=REQUIRED.filter(function(m){return m[0]==="rate"?!calc().rate:!v(m[0])});
   body.textContent="";
-  var missing=0,frag=document.createDocumentFragment();
-  G.forEach(function(g){
-    var h=document.createElement("div");h.className="rv-h";h.appendChild(ico(g[1]));h.appendChild(document.createTextNode(g[0]));frag.appendChild(h);
-    g[2].forEach(function(r){
-      var icon=r[0];                                   // option rows reuse the icon of the chosen value
-      if(["source","sales","pay","prop","cat","meal"].indexOf(icon)>-1)icon=iconFor(icon,r[2])||({source:"bars",sales:"user",pay:"card",prop:"hotel",cat:"bed",meal:"utensils"})[icon];
-      if(!r[2]&&r[1]!=="Special Request")missing++;
-      frag.appendChild(rvRow(icon,r[1],r[2],r[3],r[4]));
-    });
-  });
   var note=document.createElement("div");note.className="rv-note";
-  note.textContent=(missing?missing+" field"+(missing>1?"s":"")+" not filled yet – tap a row to edit it.":"All details filled ✓")+(emBad?" The email address looks invalid.":"");
-  body.appendChild(note);body.appendChild(frag);
+  note.textContent=(miss.length?miss.length+" field"+(miss.length>1?"s":"")+" not filled yet – tap one to fill it:":"All details filled ✓")+(emBad?" The email address looks invalid.":"");
+  body.appendChild(note);
+  if(miss.length){
+    var mw=document.createElement("div");mw.className="rv-miss";
+    miss.forEach(function(m){
+      var b=document.createElement("button");b.type="button";b.className="chip";b.textContent=m[1];
+      b.addEventListener("click",function(){jumpTo(m[2])});mw.appendChild(b);
+    });
+    body.appendChild(mw);
+  }
+  var img=document.createElement("img");img.className="rv-img";img.alt="Booking summary – the image shared to WhatsApp";
+  img.src=cardDataUrl();body.appendChild(img);
+  var more=document.createElement("div");more.className="rv-more";
+  var h=document.createElement("div");h.className="rv-h";h.appendChild(ico("message"));h.appendChild(document.createTextNode("In the message text"));more.appendChild(h);
+  more.appendChild(rvRow("mail","Email ID",em,"f-email",emBad));
+  more.appendChild(rvRow("phone","Phone",phoneFull(),"f-phone"));
+  body.appendChild(more);
   body.scrollTop=0;
 }
 $("reviewPill").addEventListener("click",function(){build();fillReview();openSheet("review")});
 $("rvEdit").addEventListener("click",closeSheet);
+
+/* ---------- guided view: floating mini panel with the options + < > buttons ---------- */
+var GHINT={bno:"Type the booking number in the field above",guest:"Type the guest's name in the field above",rate:"Enter the per-day tariff in the field above",
+  adv:"Enter the advance received in the field above",email:"Type the email in the field above (suggestions appear there)",phone:"Enter the mobile number in the field above",
+  room:"Type the room number in the field above",req:"Optional – type any special request, then tap ✓ to review"};
+function fieldLabel(f){var l=f.querySelector("label");return l?l.textContent.replace(/\s*\(.*?\)\s*$/,"").trim():""}
+function gChip(label,icon,fn){
+  var b=document.createElement("button");b.type="button";b.className="chip";b.setAttribute("role","radio");
+  if(icon)b.appendChild(ico(icon));b.appendChild(document.createTextNode(label));
+  b.addEventListener("click",fn);return b;
+}
+function gRender(f){
+  gIdx=fields.indexOf(f);if(gIdx<0)return;
+  var id=f.id.slice(2),body=$("gBody"),last=gIdx===fields.length-1;
+  $("gStep").textContent="Step "+(gIdx+1)+" of "+fields.length;
+  var lab=$("gLabel"),ic=f.querySelector("label .ic");
+  lab.textContent="";if(ic)lab.appendChild(ico(ic.dataset.i));lab.appendChild(document.createTextNode(fieldLabel(f)));
+  $("gProg").style.width=((gIdx+1)/fields.length*100)+"%";
+  $("gPrev").disabled=gIdx===0;
+  var nx=$("gNext");nx.classList.toggle("go",last);nx.setAttribute("aria-label",last?"Review":"Next");
+  nx.textContent="";nx.appendChild(ico(last?"eye":"chevR"));
+  body.textContent="";body.scrollTop=0;
+  var hint=GHINT[id];
+  if(CHOICES[id]){
+    var box=document.createElement("div");box.className="chips"+(id==="prop"||id==="cat"?" wide":"");box.setAttribute("role","radiogroup");
+    CHOICES[id].forEach(function(val){
+      var c=gChip(LABELS[id]?LABELS[id](val):val,iconFor(id,val),function(){pick(id,val)});
+      c.dataset.val=val;c.dataset.id=id;box.appendChild(c);
+    });
+    body.appendChild(box);
+    if(id==="sales"||id==="cat")hint="Or type it in the field above";
+  }else if(id==="cin"||id==="cout"){
+    var db=document.createElement("div");db.className="chips";db.setAttribute("role","radiogroup");
+    [].forEach.call((id==="cin"?cinBox:coutBox).querySelectorAll(".chip:not(.more)"),function(src){
+      var c=document.createElement("button");c.type="button";c.className="chip";c.setAttribute("role","radio");
+      c.innerHTML=src.innerHTML;c._src=src;c.addEventListener("click",function(){src.click()});db.appendChild(c);
+    });
+    body.appendChild(db);
+  }else if(id==="pax"){
+    [["adults","Adults","Age 12+"],["infants","Infants","Under 2"]].forEach(function(r){
+      var row=document.createElement("div");row.className="g-step2";
+      var sp=document.createElement("span");sp.textContent=r[1]+" ";var sm=document.createElement("small");sm.style.cssText="color:var(--muted);font-weight:400";sm.textContent=r[2];sp.appendChild(sm);
+      var ct=document.createElement("div");ct.className="ctr";
+      var mk=function(txt,d,lbl){var b=document.createElement("button");b.type="button";b.textContent=txt;b.dataset.gp=r[0];b.dataset.d=d;b.setAttribute("aria-label",lbl+" "+r[1].toLowerCase());
+        b.addEventListener("click",function(){document.querySelector('[data-pax='+r[0]+'][data-d="'+d+'"]').click()});return b};
+      var o=document.createElement("output");o.id="gp-"+r[0];
+      ct.appendChild(mk("−","-1","Fewer"));ct.appendChild(o);ct.appendChild(mk("+","1","More"));
+      row.appendChild(sp);row.appendChild(ct);body.appendChild(row);
+    });
+  }
+  if(hint){var h=document.createElement("div");h.className="g-hint";h.textContent=hint;body.appendChild(h)}
+  gSync();
+}
+// keeps the panel's selected states + the value lines in step with the form
+function gSync(){
+  Object.keys(CHOICES).forEach(function(id){
+    var d=$("gv-"+id);if(!d)return;
+    var val=$(id).value.trim();d.textContent=val||"Not selected";d.classList.toggle("empty",!val);
+  });
+  if(!guided)return;
+  [].forEach.call($("gBody").querySelectorAll(".chip"),function(c){
+    if(c._src)c.setAttribute("aria-checked",c._src.getAttribute("aria-checked")||"false");
+    else if(c.dataset.id)c.setAttribute("aria-checked",String(c.dataset.val===$(c.dataset.id).value.trim()));
+  });
+  if($("gp-adults")){
+    $("gp-adults").textContent=pax.adults;$("gp-infants").textContent=pax.infants;
+    $("gBody").querySelector('[data-gp=adults][data-d="-1"]').disabled=pax.adults<=1;
+    $("gBody").querySelector('[data-gp=infants][data-d="-1"]').disabled=pax.infants<=0;
+  }
+}
+Object.keys(CHOICES).forEach(function(id){          // value line shown instead of the chips in guided view
+  if($(id).type!=="hidden")return;
+  var d=document.createElement("div");d.className="gval";d.id="gv-"+id;
+  document.querySelector('[data-chips="'+id+'"]').after(d);
+});
+$("gPrev").addEventListener("click",function(){goTo(gIdx-1)});
+$("gNext").addEventListener("click",function(){if(gIdx>=fields.length-1)$("reviewPill").click();else goTo(gIdx+1)});
+function setView(m,save){
+  guided=m==="guided";
+  document.documentElement.classList.toggle("guided",guided);
+  $("gpanel").hidden=!guided;
+  var vb=$("viewBtn"),lbl=guided?"Switch to form view":"Switch to guided view";   // icon shows the view you switch to
+  vb.textContent="";vb.appendChild(ico(guided?"clipboard":"panel"));vb.setAttribute("aria-label",lbl);vb.title=lbl;
+  if(save){try{localStorage.setItem("view",m)}catch(e){}}
+  if(guided){
+    var cur=document.querySelector(".card > .field.active")||fields[0];
+    goTo(fields.indexOf(cur),true);
+  }
+}
+$("viewBtn").addEventListener("click",function(){setView(guided?"form":"guided",true)});
+// space for the panel under the page + keep it above the on-screen keyboard
+if(window.ResizeObserver)new ResizeObserver(function(){document.documentElement.style.setProperty("--gh",$("gpanel").offsetHeight+"px")}).observe($("gpanel"));
+var vv=window.visualViewport;
+function kbSync(){var kb=Math.max(0,window.innerHeight-vv.height-vv.offsetTop);document.documentElement.style.setProperty("--kb",(kb>80?Math.round(kb):0)+"px")}
+if(vv){vv.addEventListener("resize",kbSync);vv.addEventListener("scroll",kbSync)}
 
 /* ---------- light / dark theme ---------- */
 function setTheme(t,save){
@@ -828,6 +971,8 @@ setTheme(curTheme,false);
 $("theme").addEventListener("click",function(){curTheme=curTheme==="dark"?"light":"dark";setTheme(curTheme,true)});
 
 paxRender();build();applyParams();
+var savedView="form";try{savedView=localStorage.getItem("view")||"form"}catch(e){}
+setView(savedView,false);
 
 /* ---------- install as an app (PWA) ---------- */
 var standalone=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone;
