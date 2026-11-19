@@ -20,11 +20,11 @@
 :root[data-theme="dark"]{--bg:#141816;--card:#1d2320;--text:#e8ece9;--muted:#9aa59e;--line:#333c37;--accent:#3fb37a;--accent-text:#08140d;--out:#17261d}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
 .wrap{max-width:760px;margin:0 auto;padding:16px}
 h1{font-size:20px;margin:4px 0 14px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 14px;margin-bottom:14px}
-.field{padding:12px 10px;margin:4px -10px;border-radius:10px;border-left:3px solid transparent;scroll-margin-top:12px;transition:background .2s,border-color .2s}
+.field{padding:12px 10px;margin:4px -10px;border-radius:10px;border-left:3px solid transparent;scroll-margin-top:76px;transition:background .2s,border-color .2s}
 .field.active{background:var(--out);border-left-color:var(--accent)}
 .field+.field{border-top:1px solid transparent}
 label,.lbl{display:block;font-size:12px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
@@ -133,11 +133,46 @@ html.noscroll,html.noscroll body{overflow:hidden}
 .cc-row.sel b{color:var(--accent)}
 .cc-row .ic{margin:0 6px 0 0}
 
+/* ---------- app bar + city selector ---------- */
+.appbar{position:sticky;top:0;z-index:25;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px;background:color-mix(in srgb,var(--card) 88%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:9px;min-width:0;flex:1}
+.logo{width:34px;height:34px;flex:0 0 auto;border-radius:10px;background:var(--accent);color:var(--accent-text);display:inline-flex;align-items:center;justify-content:center}
+.logo .ic{margin:0;color:inherit}
+.brand>div{min-width:0}
+.brand b{display:block;font-size:16px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand small{display:block;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.citybtn{height:36px;max-width:42vw;flex:0 0 auto;padding:0 8px;border:1px solid var(--accent);border-radius:999px;background:var(--out);color:var(--text);font:700 14px inherit;display:inline-flex;align-items:center;cursor:pointer;touch-action:manipulation}
+.citybtn .ic{margin:0 4px 0 0}
+.citybtn .ic:last-child{margin:0 0 0 2px}
+.citybtn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.appbar .tbtns{gap:6px}
+.appbar .iconbtn{width:36px;height:36px}
+.panel.tall{height:92vh;height:92dvh}
+.city-grid{display:grid;gap:12px;padding:14px 16px 24px;overflow:auto;flex:1;align-content:start}
+.city-card{position:relative;display:flex;align-items:center;gap:16px;width:100%;min-height:120px;padding:16px;border:2px solid var(--line);border-radius:20px;background:var(--card);color:var(--text);font:inherit;text-align:left;cursor:pointer;touch-action:manipulation;transition:transform .08s}
+.city-card:active{transform:scale(.98)}
+.city-card.sel{border-color:var(--accent);background:var(--out)}
+.city-ic{flex:0 0 auto;width:84px;height:84px;border-radius:22px;background:var(--out);color:var(--accent);display:flex;align-items:center;justify-content:center}
+.city-card.sel .city-ic{background:var(--accent);color:var(--accent-text)}
+.city-ic .ic{margin:0;color:inherit;font-size:50px}
+.city-ic svg{stroke-width:1.6}
+.city-card b{display:block;font-size:22px}
+.city-card small{color:var(--muted);font-size:13px}
+.city-tick{position:absolute;top:12px;right:12px;margin:0!important}
+@media(min-width:600px){.panel.tall{max-width:720px}.city-grid{grid-template-columns:repeat(3,1fr)}.city-card{flex-direction:column;text-align:center;justify-content:center;min-height:220px}}
+
 /* ---------- view switch + guided panel ---------- */
 .gval{display:none}
-.gpanel{position:fixed;left:12px;right:12px;margin:0 auto;max-width:560px;bottom:calc(10px + env(safe-area-inset-bottom,0px) + var(--kb,0px));z-index:20;background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.35);overflow:hidden;animation:up .2s ease-out}
+.gpanel{position:fixed;left:12px;right:12px;margin:0 auto;max-width:560px;bottom:calc(10px + env(safe-area-inset-bottom,0px) + var(--kb,0px));z-index:20;--accent:#1f7a4d;--accent-text:#fff;--line:rgba(31,122,77,.3);--bg:rgba(255,255,255,.55);background:rgba(225,245,233,.55);-webkit-backdrop-filter:blur(18px) saturate(180%);backdrop-filter:blur(18px) saturate(180%);border:1.5px solid rgba(255,255,255,.7);border-radius:20px;box-shadow:0 10px 30px rgba(10,60,35,.35);overflow:hidden;animation:up .2s ease-out}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gpanel{--accent:#3fb37a;--accent-text:#08140d;--line:rgba(63,179,122,.3);--bg:rgba(255,255,255,.1);background:rgba(20,50,35,.5);border-color:rgba(255,255,255,.18)}}
+:root[data-theme="dark"] .gpanel{--accent:#3fb37a;--accent-text:#08140d;--line:rgba(63,179,122,.3);--bg:rgba(255,255,255,.1);background:rgba(20,50,35,.5);border-color:rgba(255,255,255,.18)}
 .gpanel[hidden]{display:none}
-.g-bar{height:3px;background:var(--line)}
+.g-bar{height:5px;background:var(--line)}
+.g-head{background:color-mix(in srgb,var(--accent) 85%,transparent);color:var(--accent-text)}
+.g-head .g-step{color:inherit;opacity:.85}
+.g-head .g-nav{background:var(--accent-text);color:var(--accent);border-color:var(--accent-text)}
+.g-head .g-nav:disabled{opacity:.4}
+.g-head .g-nav.go{background:var(--card);color:var(--accent)}
 .g-bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
 .g-head{display:flex;align-items:center;gap:8px;padding:8px 8px 4px}
 .g-nav{width:46px;height:46px;flex:0 0 auto;border-radius:50%;border:1px solid var(--accent);background:var(--bg);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;touch-action:manipulation}
@@ -165,7 +200,7 @@ html.guided .field .gval{display:flex;align-items:center;min-height:46px;padding
 html.guided .field .gval.empty{color:var(--muted);font-weight:400;font-style:italic}
 html.guided #paxNext{display:none}
 html.guided #toast{bottom:calc(var(--gh,160px) + var(--kb,0px) + 28px + env(safe-area-inset-bottom,0px))}
-html.guided .field{scroll-margin-top:12px}
+html.guided .field{scroll-margin-top:76px}
 /* review image */
 .rv-img{display:block;width:100%;height:auto;margin:12px 0 0;border:1px solid var(--line);border-radius:12px;background:#fff}
 .rv-miss{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -176,8 +211,12 @@ html.guided .field{scroll-margin-top:12px}
 </style>
 </head>
 <body>
+<header class="appbar">
+<div class="brand"><span class="logo"><i class="ic" data-i="hotel"></i></span><div><b>Olive Group</b><small>Booking Confirmation</small></div></div>
+<button type="button" class="citybtn" id="cityBtn"></button>
+<div class="tbtns"><button type="button" class="iconbtn" id="viewBtn"></button><button type="button" class="iconbtn" id="theme"></button></div>
+</header>
 <div class="wrap">
-<div class="top"><h1><i class="ic" data-i="hotel"></i>Olive Group – Booking Confirmation</h1><div class="tbtns"><button type="button" class="iconbtn" id="viewBtn"></button><button type="button" class="iconbtn" id="theme"></button></div></div>
 <div class="install" id="install" hidden><i class="ic" data-i="mobile"></i><span id="installTxt"></span><button type="button" class="chip" id="installBtn" hidden>Install</button><button type="button" class="x" id="installX" aria-label="Dismiss">×</button></div>
 
 <div class="card">
@@ -192,7 +231,7 @@ html.guided .field{scroll-margin-top:12px}
 
 <div class="card">
 <div class="sec-h"><i class="ic" data-i="wallet"></i>Tariff &amp; Payment</div>
-<div class="field" id="f-rate"><label for="rate"><i class="ic" data-i="rupee"></i>Per Day Tariff (before GST)</label><div class="money"><span>₹</span><input type="number" id="rate" inputmode="decimal" placeholder="0" enterkeyhint="next"></div><input type="hidden" id="gst" value="5"></div>
+<div class="field" id="f-rate"><label for="rate"><i class="ic" data-i="rupee"></i>Per Day Tariff (before GST)</label><div class="money"><span>₹</span><input type="number" id="rate" inputmode="decimal" placeholder="0" enterkeyhint="next"></div><div class="chips qa" id="rateChips"></div><input type="hidden" id="gst" value="5"></div>
 <div class="field" id="f-adv"><label for="adv"><i class="ic" data-i="wallet"></i>Advance Received</label><div class="money"><span>₹</span><input type="number" id="adv" inputmode="decimal" placeholder="0" enterkeyhint="next"></div><div class="chips qa" id="advChips"></div></div>
 <div class="field" id="f-pay"><label><i class="ic" data-i="card"></i>Payment Mode</label><div class="chips" data-chips="pay"></div><input type="hidden" id="pay"></div>
 <div class="calc">
@@ -262,6 +301,14 @@ html.guided .field{scroll-margin-top:12px}
 <div class="panel-h"><h2 id="ccTitle"><i class="ic" data-i="globe"></i>Select country</h2><button type="button" class="iconbtn" data-close aria-label="Close"><i class="ic" data-i="x"></i></button></div>
 <input type="search" class="cc-q" id="ccQ" placeholder="Search country or code (e.g. India, +44)" autocomplete="off" autocapitalize="none" spellcheck="false">
 <div class="cc-list" id="ccList"></div>
+</div>
+</div>
+
+<div class="sheet" id="citySheet" hidden role="dialog" aria-modal="true" aria-labelledby="cityTitle">
+<div class="scrim" data-close></div>
+<div class="panel tall">
+<div class="panel-h"><h2 id="cityTitle"><i class="ic" data-i="pin"></i>Select city</h2><button type="button" class="iconbtn" data-close aria-label="Close"><i class="ic" data-i="x"></i></button></div>
+<div class="city-grid" id="cityGrid"></div>
 </div>
 </div>
 
@@ -336,7 +383,11 @@ eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy=
 edit:'<path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/>',
 x:'<path d="M6 6l12 12M18 6 6 18"/>',
 check:'<path d="m5 12 5 5 9-10"/>',
-sunrise:'<path d="M12 3v4M5 12H3M21 12h-2M6.3 6.3l1.4 1.4M17.7 6.3l-1.4 1.4M7 17a5 5 0 0 1 10 0M2 21h20"/>'
+sunrise:'<path d="M12 3v4M5 12H3M21 12h-2M6.3 6.3l1.4 1.4M17.7 6.3l-1.4 1.4M7 17a5 5 0 0 1 10 0M2 21h20"/>',
+pin:'<path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+charminar:'<path d="M2 21h20M4 21V8M20 21V8M2.5 8a1.5 1.5 0 0 1 3 0M18.5 8a1.5 1.5 0 0 1 3 0M7 21V11h10v10M7 11h10M10 11a2 2 0 0 1 4 0M12 9V7M10 21v-5a2 2 0 0 1 4 0v5"/>',
+gurgaon:'<path d="M2 21h20M4 21V11h5v10M9 21V3h6v18M15 21V8h5v13M11.5 7h1M11.5 11h1M11.5 15h1M6 14h1M17 12h1M17 16h1"/>',
+bangalore:'<path d="M2 21h20M4 13h16M5 13v8M19 13v8M8.5 13v8M12 13v8M15.5 13v8M7 13l5-3 5 3M9.5 10a2.5 2.5 0 0 1 5 0M12 7.5V4"/>'
 };
 function ico(n){var i=document.createElement("i");i.className="ic";i.dataset.i=n;paint(i);return i}
 function paint(el){el.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+(IC[el.dataset.i]||"")+'</svg>'}
@@ -501,6 +552,11 @@ var advBtns=[25,50,100].map(function(p){
   });
   b.dataset.p=p;return b;
 });
+var rateBox=$("rateChips");
+var rateBtns=[2000,2500,3000,3500,4000].map(function(r){
+  var b=mkChip(rateBox,inr(r),null,function(){$("rate").value=r;build();advance($("f-rate"))});
+  b.dataset.r=r;return b;
+});
 var noReq=mkChip(reqBox,NOREQ,"check",function(){
   $("req").value=v("req")===NOREQ?"":NOREQ;build();
 });
@@ -512,6 +568,7 @@ function quickSync(){
     b.setAttribute("aria-checked",String(!!t&&a!==null&&a===advAmt(t,p)));
   });
   noReq.setAttribute("aria-checked",String(v("req")===NOREQ));
+  rateBtns.forEach(function(b){b.setAttribute("aria-checked",String(raw!==undefined&&$("rate").value!==""&&+$("rate").value===+b.dataset.r))});
 }
 
 /* ---------- remember the salesperson on this device ---------- */
@@ -630,9 +687,19 @@ function drawCard(){
   ctx.fillStyle="#ffffff";ctx.fillRect(0,0,W,H);
   ctx.fillStyle=G;ctx.fillRect(0,0,W,HEAD);
   ctx.fillStyle="#ffffff";ctx.textBaseline="alphabetic";
-  ctx.font="800 50px "+F;ctx.fillText("New Booking Confirmed",PAD,80);
-  ctx.font="500 30px "+F;ctx.globalAlpha=.9;
-  ctx.fillText(v("bno")?"Booking No. "+v("bno"):"Booking details",PAD,128);ctx.globalAlpha=1;
+  // city logo (top right)
+  var TS=110,TX=W-PAD-TS,cityIc=(CITIES.filter(function(c){return c.n===city})[0]||{}).i;
+  ctx.fillStyle="rgba(255,255,255,.18)";ctx.beginPath();
+  if(ctx.roundRect)ctx.roundRect(TX,30,TS,TS,26);else ctx.rect(TX,30,TS,TS);
+  ctx.fill();
+  if(cityIc)drawIcon(ctx,cityIc,TX+15,45,80,"#ffffff");
+  // "MA-28, Gurgaon" then "Booking Confirmed"
+  var title=v("prop")?v("prop")+", "+city:city,fs=50,maxT=TX-PAD-30;
+  ctx.fillStyle="#ffffff";
+  do{ctx.font="800 "+fs+"px "+F;fs-=2}while(ctx.measureText(title).width>maxT&&fs>24);
+  ctx.fillText(title,PAD,80);
+  ctx.font="600 34px "+F;ctx.globalAlpha=.92;
+  ctx.fillText("Booking Confirmed",PAD,128);ctx.globalAlpha=1;
   var y=HEAD+30;
   lay.forEach(function(r){
     drawIcon(ctx,r.ic,PAD,y+4,38,G);
@@ -926,8 +993,8 @@ function gRender(f){
     });
     body.appendChild(box);
     if(id==="sales"||id==="cat")hint="Or type it in the field above";
-  }else if(id==="cin"||id==="cout"||id==="adv"||id==="req"){
-    var srcBox={cin:cinBox,cout:coutBox,adv:advBox,req:reqBox}[id];
+  }else if(id==="cin"||id==="cout"||id==="rate"||id==="adv"||id==="req"){
+    var srcBox={cin:cinBox,cout:coutBox,rate:rateBox,adv:advBox,req:reqBox}[id];
     var db=document.createElement("div");db.className="chips";db.setAttribute("role","radiogroup");
     [].forEach.call(srcBox.querySelectorAll(".chip:not(.more)"),function(src){
       var c=document.createElement("button");c.type="button";c.className="chip";c.setAttribute("role","radio");
@@ -1002,6 +1069,34 @@ function setTheme(t,save){
 var curTheme=document.documentElement.getAttribute("data-theme")||(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
 setTheme(curTheme,false);
 $("theme").addEventListener("click",function(){curTheme=curTheme==="dark"?"light":"dark";setTheme(curTheme,true)});
+
+/* ---------- city selector ---------- */
+var CITIES=[{n:"Gurgaon",i:"gurgaon",t:"Millennium City"},{n:"Bangalore",i:"bangalore",t:"Garden City"},{n:"Hyderabad",i:"charminar",t:"City of Pearls"}];
+var city=CITIES[0].n;
+try{var sc=localStorage.getItem("city");if(CITIES.some(function(c){return c.n===sc}))city=sc}catch(e){}
+function cityBtn(){
+  var b=$("cityBtn");b.textContent="";b.appendChild(ico("pin"));
+  var s=document.createElement("span");s.textContent=city;b.appendChild(s);b.appendChild(ico("chevD"));
+  b.setAttribute("aria-label","City: "+city+". Change city");
+}
+function renderCities(){
+  var g=$("cityGrid");g.textContent="";
+  CITIES.forEach(function(c){
+    var b=document.createElement("button");b.type="button";b.className="city-card"+(c.n===city?" sel":"");
+    var w=document.createElement("span");w.className="city-ic";w.appendChild(ico(c.i));
+    var t=document.createElement("span"),n=document.createElement("b"),s=document.createElement("small");
+    n.textContent=c.n;s.textContent=c.t;t.appendChild(n);t.appendChild(s);
+    b.appendChild(w);b.appendChild(t);
+    if(c.n===city){var k=ico("check");k.classList.add("city-tick");b.appendChild(k)}
+    b.addEventListener("click",function(){
+      city=c.n;try{localStorage.setItem("city",city)}catch(e){}
+      cityBtn();closeSheet();toast("City: "+city);
+    });
+    g.appendChild(b);
+  });
+}
+$("cityBtn").addEventListener("click",function(){renderCities();openSheet("citySheet")});
+cityBtn();
 
 paxRender();build();applyParams();
 var savedView="guided";try{savedView=localStorage.getItem("view")||"guided"}catch(e){}
